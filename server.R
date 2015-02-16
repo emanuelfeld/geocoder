@@ -51,9 +51,9 @@ function(input, output, session) {
   }, options = list(scrollX = TRUE, pageLength = 5, lengthMenu = list(c(5, 15, -1), c("5", "15", "All"))))
   
   output$downloadData <- downloadHandler(filename = function() {
-    paste("download", ".csv", sep = "")
+    paste("geocoded", ".csv", sep = "")
   }, content = function(file) {
-    write.csv(geocodedInput(), file)
+    write.csv(geocodedInput(), file,row.names=FALSE)
   })
   
   output$run <- renderUI({
