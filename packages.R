@@ -6,7 +6,7 @@
 ###########################################################
 # R packages to install from CRAN:
 
-my_packages = c("BH","dplyr","RCurl","rjson","devtools")
+my_packages = c("dplyr","RCurl","rjson","devtools")
 
 ###########################################################
 
