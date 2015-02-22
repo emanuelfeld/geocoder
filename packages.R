@@ -1,18 +1,14 @@
-#
-# Example R code to install packages
-# See http://cran.r-project.org/doc/manuals/R-admin.html#Installing-packages for details
-#
 
 ###########################################################
 # R packages to install from CRAN:
 
-my_packages = c("dplyr","RCurl","rjson","devtools")
+my_packages = c("dplyr","RCurl","devtools","BH")
 
 ###########################################################
 
 install_if_missing = function(p) {
   if (p %in% rownames(installed.packages()) == FALSE) {
-    install.packages(p, dependencies = TRUE)
+    install.packages(p)
   }
   else {
     cat(paste("Skipping already installed package:", p, "\n"))
