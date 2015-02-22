@@ -2,7 +2,7 @@ library(shinydashboard)
 library(leaflet)
 library(dplyr)
 library(shiny)
-library(rjson)
+library(RJSONIO)
 library(RCurl)
 library(BH)
 
