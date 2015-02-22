@@ -19,5 +19,5 @@ invisible(sapply(my_packages, install_if_missing))
 ###########################################################
 # Non-CRAN R packages to install:
 
-invisible(devtools::install_github('rstudio/leaflet'))
-invisible(devtools::install_github('rstudio/shinydashboard'))
+devtools::install_github('rstudio/leaflet')
+devtools::install_github('rstudio/shinydashboard')
