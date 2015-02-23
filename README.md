@@ -1,6 +1,6 @@
 geocoder
 ===============
-Provides an [R Shiny](http://shiny.rstudio.com/) interface for geocoding an uploaded CSV file, visualizing the resulting points on a [LeafletJS](http://leafletjs.com/) map, and downloading the resulting CSV, with additional columns giving latitide and longitude. For best results, the address column should include the point's full address (street, city, state/country). 
+Provides an [R Shiny](http://shiny.rstudio.com/) interface for geocoding an uploaded CSV file, visualizing the resulting points on a [LeafletJS](http://leafletjs.com/) slippy map, and downloading the resulting CSV, with additional columns giving latitide and longitude. For best results, the address column should include the point's full address (street, city, state/country). 
 
 View and use an instance of the app at https://emanuelfeld.shinyapps.io/geocoder/.
 
