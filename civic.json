@@ -1,0 +1,26 @@
+{
+    "conformsTo": "http://codefordc.org/resources/specification.html",
+    "status": "Production",
+    "thumbnailUrl": "",
+    "contact": {
+        "name": "CSV Geocoder",
+        "email": "",
+        "twitter": "@evonfriedland"
+    },
+    "bornAt": "",
+    "geography": "Global",
+    "politicalEntity": {},
+    "governmentPartner": {},
+    "communityPartner": {},
+    "type": "Web App",
+    "data": {
+        "": ""
+    },
+    "needs": [],
+    "categories": [
+        "Geocoding",
+        "Geospatial",
+        "Maps"
+    ],
+    "moreInfo": "https://emanuelfeld.shinyapps.io/geocoder"
+}
