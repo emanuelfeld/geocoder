@@ -13,14 +13,12 @@
     "governmentPartner": {},
     "communityPartner": {},
     "type": "Web App",
-    "data": {
-        "": ""
-    },
+    "data": {},
     "needs": [],
     "categories": [
-        "Geocoding",
-        "Geospatial",
-        "Maps"
+        {"category":"Geocoding"},
+        {"category":"Geospatial"},
+        {"category":"Maps"}
     ],
     "moreInfo": "https://emanuelfeld.shinyapps.io/geocoder"
 }
