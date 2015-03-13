@@ -11,8 +11,8 @@ geocoder <- function(data, address) {
   address_v <- gsub(" ", "+", address_v)
   for (i in 1:length(address_v)) {
     url <- fromJSON(getURL(paste("https://maps.googleapis.com/maps/api/geocode/json?address=", address_v[i], sep = "")))
-    data$lat[i] <- url$results[[1]]$geometry$location$lat
-    data$lng[i] <- url$results[[1]]$geometry$location$lng
+    data$lat[i] <- url$results[[1]]$geometry$location[1]
+    data$lng[i] <- url$results[[1]]$geometry$location[2]
     Sys.sleep(0.1)
   }
   return(data)
