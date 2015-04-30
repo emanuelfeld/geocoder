@@ -1,0 +1,193 @@
+<!doctype html>
+<html>
+	<head>
+		<meta charset="utf-8">
+		<meta http-equiv="X-UA-Compatible" content="chrome=1">
+		<meta property="og:title" content="geocoder" />
+		<meta property="og:site_name" content="geocoder" />
+		<meta property="og:description" content="Simple CSV geocoding interface." />
+		<meta property="og:type" content="website" />
+		<meta property="og:url" content="https://emanuelfeld.github.io/geocoder" />
+		<meta property="og:image" content="http://getdctrees.org/assets/dc300green.png" />
+		
+		<title>geocoder</title>
+		
+		<link rel="stylesheet" href="stylesheets/index.css">
+		<link rel="stylesheet" href="stylesheets/pygment_trac.css">
+		<link rel="shortcut icon" type="image/x-icon" href="assets/dc16.ico" >
+
+		<link rel="stylesheet" href="http://cdn.leafletjs.com/leaflet-0.7.3/leaflet.css" />
+		<script src="http://cdn.leafletjs.com/leaflet-0.7.3/leaflet.js"></script>
+
+		<link href="http://libs.cartocdn.com/cartodb.js/v3/3.13/themes/css/cartodb.css" rel="stylesheet">
+
+
+		<meta content="initial-scale=1.0, user-scalable=no" name="viewport">
+		<!--[if lt IE 9]>
+		<script src="//html5shiv.googlecode.com/svn/trunk/html5.js"></script>
+		<![endif]-->
+		<!-- Go to www.addthis.com/dashboard to customize your tools -->
+		<script src="javascripts/papaparse.min.js"></script>
+		<script src="javascripts/papaparse.min.js"></script>
+		<script src="https://maps.googleapis.com/maps/api/js?v=3.exp&signed_in=true"></script>
+		<script type="text/javascript" src="//s7.addthis.com/js/300/addthis_widget.js#pubid=ra-553071fc49386392" async="async"></script>
+		<script>
+		(function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
+		(i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
+		m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
+		})(window,document,'script','//www.google-analytics.com/analytics.js','ga');
+		
+		ga('create', 'UA-61856433-1', 'auto');
+		ga('send', 'pageview');
+		</script>
+	</head>
+
+	<body style="margin:0 auto">
+		
+		<header class="header">
+			<!-- <div id="logo"><img src="assets/dc64green.png"></div> -->
+			<div id="title"> 
+				<span id="plant">geocode this file</span>
+				<input type="file" value="hello" id="files" name="files[]" />
+				using
+				<select id="field_list">
+					<option selected="selected" disabled="disabled">this column</option>
+				</select>
+				<button id="geocode" type="submit" disabled="disabled">go!</button>
+				<button id="download" type="submit" disabled="disabled">download</button>
+			</div>
+		</header>
+
+		<div id="map"></div>
+
+		<script src="http://libs.cartocdn.com/cartodb.js/v3/3.13/cartodb.js"></script>
+
+		<script>
+
+
+			function main() {
+
+				var coordinates=[];
+				var lat, lon;
+			    var geocoder = new google.maps.Geocoder();
+
+			    function gatherPoints(c, data, count) {
+			    	coordinates.push(c);
+			    	if (coordinates.length == count) {
+				    	var lat_list=[];
+				    	var lon_list =[];
+				    	for (var x = 0; x < count; x++) {
+				    		lat_list.push(coordinates[x]['latitude']);
+				    		lon_list.push(coordinates[x]['longitude']);
+				    		jQuery.extend(data[x], coordinates[x]);
+				    	}
+				    	min_lat = Math.min.apply(Math, lat_list);
+				    	max_lat = Math.max.apply(Math, lat_list);
+				    	min_lon = Math.min.apply(Math, lon_list);
+				    	max_lon = Math.max.apply(Math, lon_list);
+				    	var csv = Papa.unparse(data);
+				    	map.fitBounds([
+						    [min_lat, min_lon],
+						    [max_lat, max_lon]
+						]);
+
+						var button = document.getElementById('download');
+			            button.removeAttribute("disabled");
+			            button.textContent = "";
+			            var a = document.createElement('a');
+			            a.setAttribute("style","text-decoration: none; color: #222")
+						a.innerHTML = "hello";
+						a.href     = 'data:application/csv;charset=utf-8,' + encodeURIComponent(csv);
+						a.target   = '_blank';
+						a.download = 'geocoded.csv';
+						button.appendChild(a);
+			    	}
+			    }
+
+			    function geocodeThis(index, count, data, address) {
+			        var address = address;
+			        geocoder.geocode({'address': address}, 
+			        	function(results, status) {
+				            if (status == google.maps.GeocoderStatus.OK) {
+				                lat = results[0].geometry.location['A'];
+				                lon = results[0].geometry.location['F'];
+				                var marker = L.marker([lat, lon]).addTo(map);
+				            } else {
+				            	lat = null;
+				            	lon = null;
+				            }
+				            var c = {'index': index, 'latitude': lat,'longitude': lon};
+				            gatherPoints(c, data, count);
+			        });
+			    }
+
+			    function handleFileSelect(evt) {
+			        var files = evt.target.files;
+			        console.log(files);
+			        var parsed = Papa.parse(files[0], {
+			            header: true,
+			            complete: function(results) {
+			                var fields = results['meta']['fields'];
+			                var data = results['data'];
+			                console.log(data);
+			                makeList(fields, data);
+			            }
+			        });
+			    }
+
+			    function logItems(data) {
+			    	var count = data.length;
+			    	console.log(data);
+			        for (var x = 0; x < count; x++) {
+			            geocodeThis(x, count, data, data[x]['Address']);
+			        }
+			    }
+
+			    function makeList(fields, data) {
+			        var field_list = document.getElementById('field_list');
+			        field_list.id = "field_list";
+			        $(".option").remove();
+			        for (var i = 0; i < fields.length; i++) {
+			            var op = new Option();
+			            op.setAttribute("class","option");
+			            op.value = fields[i];
+			            op.text = fields[i];
+			            field_list.options.add(op);
+			        }
+			        var where = document.getElementById('title');
+			        where.appendChild(field_list);
+			        var selected = document.getElementById('field_list').selectedOptions[0].text;
+			        logItems(data);
+			    }
+
+
+			    document.getElementById('files').addEventListener('change', handleFileSelect, false);
+
+			    var map = L.map('map').setView([51.505, -0.09], 2);
+
+			    L.tileLayer('http://{s}.tiles.mapbox.com/v3/evonfriedland.m2bo5h3j/{z}/{x}/{y}.png', {
+			    attribution: 'Map data &copy; <a href="http://openstreetmap.org">OpenStreetMap</a> contributors, <a href="http://creativecommons.org/licenses/by-sa/2.0/">CC-BY-SA</a>, Imagery © <a href="http://mapbox.com">Mapbox</a>',
+			    maxZoom: 18
+			}).addTo(map);
+
+			}
+
+			window.onload = main;
+
+		</script>
+
+		<footer class="footer">
+			<a href="about.html" class="link"> about </a> 
+			<a href="about.html#contact" class="link"> contact </a>
+			<!-- Go to www.addthis.com/dashboard to customize your tools -->
+			<div style="display:inline-block">
+				<div class="addthis_sharing_toolbox"></div>	
+			</div>
+		</footer>	
+
+		<script src="javascripts/scale.fix.js"></script>
+		<!-- Go to www.addthis.com/dashboard to customize your tools -->
+		<script type="text/javascript" src="//s7.addthis.com/js/300/addthis_widget.js#pubid=ra-553071fc49386392" async="async"></script>
+
+  	</body>
+</html>
