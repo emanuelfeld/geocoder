@@ -51,13 +51,13 @@
 				<div id="about">
 					<h2><a class="anchor" href="#about" id="about"><span class="octicon octicon-link"></span></a>About</h2>
 
-						<p>Provides a simple web interface for geocoding addresses in an uploaded CSV file, visualizing the points on a <a href="http://leafletjs.com/" target="_blank">LeafletJS</a> map, and downloading the resulting CSV, with additional columns giving latitide and longitude.</p> 
+						<p>A simple web interface for geocoding addresses in an uploaded CSV file, visualizing the points on a map, and downloading the resulting CSV, with additional columns giving latitide and longitude.</p> 
 
-						<p>For best results, the selected address column should include the point's full address (street, city, state/country). The map should help you figure out if anything went awry.</p>
+						<p>For best results, the selected address column should include the point's full address (street, city, state/country). The map can help you figure out if anything went awry.</p>
 
-						<p>The geocoding functionality employs <a href="https://developers.google.com/maps/articles/geocodestrat#client" target="_blank">client-side geocoding</a>, courtesy of the Google Maps API. This enforces a limit of 2,500 requests per day and 5 per second, both per IP address. Because the API does not allow for batch geocoding, requests must be sent address by address. In other words, each geocoded row of the uploaded CSV counts toward those limits.</p>
+						<p>Geocoding is done <a href="https://developers.google.com/maps/articles/geocodestrat#client" target="_blank">client-side</a>, courtesy of the Google Maps API. This enforces a limit of 2,500 requests per day and 5 per second, both per IP address. Because the API does not allow for batch geocoding, requests must be sent address by address. In other words, each geocoded row of the uploaded CSV counts toward those limits.</p>
 
-						<p>In light of these limits and because downloading is only permitted when all rows have been geocoded, I would not advise using the site for CSVs with more than a couple hundred rows. For most occasional uses, however, it should work well.</p>
+						<p>In light of these limits and because downloading is only permitted when all rows have been processed, I would advise against using the site for CSVs with more than a couple hundred rows. For most occasional uses, however, it should do the trick.</p>
 
 				</div>
 
