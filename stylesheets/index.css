@@ -7,7 +7,7 @@
 
 #title_box {
     background-color: #257625;        
-    padding:10px 80px 10px 0px;
+    padding:10px 90px 10px 0px;
     margin-bottom:10px;
 }
 
@@ -17,7 +17,7 @@
 }
 
 #subtitle {
-    font:15px Dosis,"Helvetica Neue",Helvetica,Arial,sans-serif;
+    font:20px Dosis,"Helvetica Neue",Helvetica,Arial,sans-serif;
     color: white;
     padding-top:0;
 }
@@ -42,14 +42,14 @@
     font:25px Lato,"Helvetica Neue",Helvetica,Arial,sans-serif;
     color:#222;
     font-weight:300;
-    width:30%;
-    height:80%;
+    width:35%;
+    height:100%;
     display: table-cell;
 }
 
 #map {
     height:100%;
-    width:70%;
+    width:65%;
     overflow:hidden;
     display: table-cell
 }
