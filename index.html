@@ -8,7 +8,7 @@
 		<meta property="og:description" content="Simple CSV geocoding interface." />
 		<meta property="og:type" content="website" />
 		<meta property="og:url" content="https://emanuelfeld.github.io/geocoder" />
-		<meta property="og:image" content="http://getdctrees.org/assets/dc300green.png" />
+		<meta property="og:image" content="https://emanuelfeld.github.io/geocoder/assets/geocoder_box.png" />
 		
 		<title>geocoder</title>
 		
@@ -35,16 +35,13 @@
 		m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
 		})(window,document,'script','//www.google-analytics.com/analytics.js','ga');
 		
-		ga('create', 'UA-61856433-1', 'auto');
+		ga('create', 'UA-61502361-1', 'auto');
 		ga('send', 'pageview');
 		</script>
 	</head>
 
 	<body style="margin:0 auto">
 		
-<!-- 		<header class="header">
- -->			<!-- <div id="logo"><img src="assets/dc64green.png"></div> -->
-
  <div id="contents">
  	<div style="display: table-row">
 
@@ -75,153 +72,177 @@
 
 		<div id="map"></div>
 	</div>
-		<script src="http://libs.cartocdn.com/cartodb.js/v3/3.13/cartodb.js"></script>
 
 		<script>
 
-
 			function main() {
 
-				var coordinates=[];
-				var lat, lon;
+			    var coordinates = [];
+			    var lat, lon;
 			    var geocoder = new google.maps.Geocoder();
 
-			    function gatherPoints(c, data, count) {
-			    	coordinates.push(c);
-			    	if (coordinates.length == count) {
-			    		console.log(coordinates);
-			    		console.log(data);
-				    	var lat_list=[];
-				    	var lon_list =[];
-				    	for (var x = 0; x < count; x++) {
-				    		lat_list.push(coordinates[x]['latitude']);
-				    		lon_list.push(coordinates[x]['longitude']);
-				    		jQuery.extend(data[x], coordinates[x]);
-				    	}
-				    	min_lat = Math.min.apply(Math, lat_list);
-				    	max_lat = Math.max.apply(Math, lat_list);
-				    	min_lon = Math.min.apply(Math, lon_list);
-				    	max_lon = Math.max.apply(Math, lon_list);
+			    //listen for data upload. right now only csv/tsv type files. also presumes that file contains headers.
+			    document.getElementById('files').addEventListener('change', handleFileSelect, false);
 
-				    	map.fitBounds([
-						    [min_lat, min_lon],
-						    [max_lat, max_lon]
-						]);
-				    	console.log(data);
-				    	var csv = Papa.unparse(data);
+			    //initialize map
+			    var map = L.map('map').setView([51.505, -0.09], 2);
+			    L.tileLayer('http://{s}.tiles.mapbox.com/v3/evonfriedland.m2bo5h3j/{z}/{x}/{y}.png', {
+			        attribution: 'Map data &copy; <a href="http://openstreetmap.org">OpenStreetMap</a> contributors, <a href="http://creativecommons.org/licenses/by-sa/2.0/">CC-BY-SA</a>, Imagery © <a href="http://mapbox.com">Mapbox</a>',
+			        maxZoom: 18
+			    }).addTo(map);
 
-						var button = document.getElementById('download');
-			            button.removeAttribute("disabled");
-			            button.textContent = "";
-
-			            var a = document.createElement('a');
-			            a.setAttribute("style","text-decoration: none; color: #222")
-						a.innerHTML = "Download";
-						a.href = 'data:application/csv;charset=utf-8,' + encodeURIComponent(csv);
-						a.target = '_blank';
-						a.download = 'geocoded.csv';
-						button.appendChild(a);
-			    	}
-			    }
-
-			    function geocodeThis(index, count, data, address) {
-			        var address = address;
-			        geocoder.geocode({'address': address}, 
-			        	function(results, status) {
-				            if (status == google.maps.GeocoderStatus.OK) {
-				                lat = results[0].geometry.location['A'];
-				                lon = results[0].geometry.location['F'];
-				                var marker = L.marker([lat, lon]).addTo(map);
-				            } else {
-				            	lat = null;
-				            	lon = null;
-				            }
-				            var c = {'index': index, 'latitude': lat,'longitude': lon};
-				            gatherPoints(c, data, count);
-			        });
-			    }
+			    //set up feature group to gather markers
+				var markers = L.featureGroup();
 
 			    function handleFileSelect(evt) {
+
 			        var files = evt.target.files;
 			        console.log(files);
+
 			        var parsed = Papa.parse(files[0], {
 			            header: true,
 			            complete: function(results) {
-			                var fields = results['meta']['fields'];
-			                var data = results['data'];
-			                makeList(fields, data);
+
+			            	var info = results;
+
+			                makeList();
+
+			                //create the dropdown menu of fields in the uploaded file. removes any that may have been left over from a previous file upload.
+			                function makeList() {
+			                    var field_list = document.getElementById('field_list');
+			                    field_list.id = "field_list";
+			                    $(".option").remove();
+			                    for (var i = 0; i < info.meta.fields.length; i++) {
+			                        var op = new Option();
+			                        op.setAttribute("class", "option");
+			                        op.value = info.meta.fields[i];
+			                        op.text = info.meta.fields[i];
+			                        field_list.options.add(op);
+			                    }
+			                    var column_select = document.getElementById('column_select');
+			                    field_list.removeAttribute("disabled");
+			                    column_select.appendChild(field_list);
+
+			                    //once a field value has been selected from the dropdown, enable the geocoder button
+			                    toggleGeocoder = function() {
+			                        var geocode = document.getElementById('geocode');
+			                        var selected = document.getElementById('field_list').selectedOptions[0].text;
+			                        if (selected != "This Column") {
+			                            geocode.removeAttribute("disabled");
+			                        }
+			                        console.log(selected);
+			                    }
+
+			                    //upon button press, clear existing markers and begin geocoding
+			                    runGeocoder = function() {
+			                        var selected = document.getElementById('field_list').selectedOptions[0].text;
+				                    markers.clearLayers();		
+			                        logItems(selected);
+			                    }
+
+			                    document.getElementById('field_list').addEventListener('change', toggleGeocoder, false);
+			                    document.getElementById('geocode').addEventListener('click', runGeocoder, false);
+			                }
+
+			                //iterate through selected column values for geocoding
+			                function logItems(selected) {
+			                    for (var x = 0; x < info.data.length; x++) {
+			                        geocodeThis(x, info.data[x][selected]);
+			                    }
+			                }
+
+			                //geocode each address value and send it off to be collected
+			                function geocodeThis(index, selected) {
+			                    	console.log(index);
+				                    var address = info.data[index][selected];
+				                    geocoder.geocode({
+				                        'address': selected
+				                    }, function(gmap, status) {
+				                        if (status == google.maps.GeocoderStatus.OK) {
+				                            lat = gmap[0].geometry.location['A'];
+				                            lon = gmap[0].geometry.location['F'];
+				                        } else {
+				                            lat = null;
+				                            lon = null;
+				                        }
+				                        var c = {
+				                            'index': index,
+				                            'latitude': lat,
+				                            'longitude': lon
+				                        };
+				                        gatherPoints(c, selected);
+				                    });
+				                }
+
+				            //creates map and file outputs  
+			                function gatherPoints(c, address) {
+
+			                	console.log("Gathering points.")
+			                	var data = info.data;
+
+			                	//initialize coordinates array, if first geocoded point
+			                    if (c['index'] === 0) {
+			                        coordinates = []
+			                    }
+
+			                    //add point to coordiantes array
+			                    coordinates.push(c);
+
+			                    //once all points geocoded, add to map, zoom to markers, and output csv
+			                    if (coordinates.length == data.length) {
+			                        var lat_list = [];
+			                        var lon_list = [];
+			                        var new_data = [];
+			                        for (var x = 0; x < data.length; x++) {
+			                        	var marker = L.marker([coordinates[x]['latitude'], coordinates[x]['longitude']]);
+			                        	marker.bindPopup(address, { showOnMouseOver: true });
+
+			                        	console.log(marker);
+				                        markers.addLayer(marker);
+				                        console.log("Adding marker.")
+			                            lat_list.push(coordinates[x]['latitude']);
+			                            lon_list.push(coordinates[x]['longitude']);
+			                            new_data[x] = jQuery.extend({}, data[x], coordinates[x]);
+			                        }
+
+			                        markers.addTo(map);
+
+			                        min_lat = Math.min.apply(Math, lat_list);
+			                        max_lat = Math.max.apply(Math, lat_list);
+			                        min_lon = Math.min.apply(Math, lon_list);
+			                        max_lon = Math.max.apply(Math, lon_list);
+
+			                        map.fitBounds([
+			                            [min_lat, min_lon],
+			                            [max_lat, max_lon]
+			                        ]);
+
+			                        var csv = Papa.unparse(new_data);
+
+			                        //enable download button
+			                        var button = document.getElementById('download');
+			                        button.removeAttribute("disabled");
+			                        button.textContent = "";
+			                        var a = document.createElement('a');
+			                        a.setAttribute("style", "text-decoration: none; color: #222")
+			                        a.innerHTML = "Download";
+			                        a.href = 'data:application/csv;charset=utf-8,' + encodeURIComponent(csv);
+			                        a.target = '_blank';
+			                        a.download = 'geocoded.csv';
+			                        button.appendChild(a);
+			                    }
+			                }
 			            }
 			        });
 			    }
-
-			    function logItems(data, selected) {
-			    	var count = data.length;
-			    	// console.log(data);
-			        for (var x = 0; x < count; x++) {
-			            geocodeThis(x, count, data, data[x][selected]);
-			        }
-			    }
-
-			    function makeList(fields, data) {
-			    	var data = data;
-			        var field_list = document.getElementById('field_list');
-			        field_list.id = "field_list";
-			        $(".option").remove();
-			        for (var i = 0; i < fields.length; i++) {
-			            var op = new Option();
-			            op.setAttribute("class","option");
-			            op.value = fields[i];
-			            op.text = fields[i];
-			            field_list.options.add(op);
-			        }
-			       	var column_select = document.getElementById('column_select');
-	                field_list.removeAttribute("disabled");
-			        column_select.appendChild(field_list);
-
-			     	toggleGeocoder = function() {
-				        var geocode = document.getElementById('geocode');
-				        var selected = document.getElementById('field_list').selectedOptions[0].text;
-				        if (selected!="This Column") {
-				        	geocode.removeAttribute("disabled");
-				        } 
-				        console.log(selected);
-			    	}
-
-			    	runGeocoder = function() {
-			    		var selected = document.getElementById('field_list').selectedOptions[0].text;
-			    		// console.log(data);
-				        logItems(data, selected);
-			    	}
-
-				    document.getElementById('field_list').addEventListener('change', toggleGeocoder, false);
-					document.getElementById('geocode').addEventListener('click', runGeocoder, false);
-			    }
-
-			    document.getElementById('files').addEventListener('change', handleFileSelect, false);
-
-			    var map = L.map('map').setView([51.505, -0.09], 2);
-
-			    L.tileLayer('http://{s}.tiles.mapbox.com/v3/evonfriedland.m2bo5h3j/{z}/{x}/{y}.png', {
-			    attribution: 'Map data &copy; <a href="http://openstreetmap.org">OpenStreetMap</a> contributors, <a href="http://creativecommons.org/licenses/by-sa/2.0/">CC-BY-SA</a>, Imagery © <a href="http://mapbox.com">Mapbox</a>',
-			    maxZoom: 18
-			}).addTo(map);
-
 			}
-
+			
 			window.onload = main;
 
 		</script>
 
-<!-- 		<footer class="footer">
-			<a href="about.html" class="link"> about </a> 
-			<a href="about.html#contact" class="link"> contact </a>
-			<div style="display:inline-block">
-				<div class="addthis_sharing_toolbox"></div>	
-			</div>
-		</footer>	
- -->
 		<script src="javascripts/scale.fix.js"></script>
-		<!-- Go to www.addthis.com/dashboard to customize your tools -->
+
 		<script type="text/javascript" src="//s7.addthis.com/js/300/addthis_widget.js#pubid=ra-5542e6df2a2e5aa7" async="async"></script>
 
   	</body>
