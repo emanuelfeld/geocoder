@@ -8,53 +8,73 @@
 		<meta property="og:description" content="Simple CSV geocoding interface." />
 		<meta property="og:type" content="website" />
 		<meta property="og:url" content="https://emanuelfeld.github.io/geocoder" />
-		<meta property="og:image" content="http://getdctrees.org/assets/dc300green.png" />
+		<meta property="og:image" content="https://emanuelfeld.github.io/geocoder/assets/geocoder_box.png" />
 		
 		<title>geocoder</title>
 		
 		<link rel="stylesheet" href="stylesheets/about.css">
 		<link rel="stylesheet" href="stylesheets/pygment_trac.css">
-		<link rel="shortcut icon" type="image/x-icon" href="assets/dc16.ico" >
-		<meta name="viewport" content="width=device-width, initial-scale=1, user-scalable=no">
+		<link rel="shortcut icon" type="image/x-icon" href="assets/geocoder_box.ico" >
+		<link href='http://fonts.googleapis.com/css?family=Dosis|Abel|Titillium+Web|Roboto+Condensed' rel='stylesheet' type='text/css'>
+
+		<link rel="stylesheet" href="http://cdn.leafletjs.com/leaflet-0.7.3/leaflet.css" />
+		<script src="http://cdn.leafletjs.com/leaflet-0.7.3/leaflet.js"></script>
+
+		<meta content="initial-scale=1.0, user-scalable=no" name="viewport">
 		<!--[if lt IE 9]>
 		<script src="//html5shiv.googlecode.com/svn/trunk/html5.js"></script>
 		<![endif]-->
 		<!-- Go to www.addthis.com/dashboard to customize your tools -->
-		<script type="text/javascript" src="//s7.addthis.com/js/300/addthis_widget.js#pubid=ra-553071fc49386392" async="async"></script>
-		<!-- Load c3.css -->
-		<link href="stylesheets/c3.css" rel="stylesheet" type="text/css">
-		<!-- Load d3.js and c3.js -->
-		<script src="javascripts/d3.v3.min.js" charset="utf-8"></script>
-		<script src="javascripts/c3.min.js"></script>
+		<script src="javascripts/papaparse.min.js"></script>
+		<script src="javascripts/jquery.min.js"></script>
+		<script src="https://maps.googleapis.com/maps/api/js?v=3.exp&signed_in=true"></script>
+		<script type="text/javascript" src="//s7.addthis.com/js/300/addthis_widget.js#pubid=ra-5542e6df2a2e5aa7" async="async"></script>
 		<script>
-			(function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
-			(i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
-			m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
-			})(window,document,'script','//www.google-analytics.com/analytics.js','ga');
-			
-			ga('create', 'UA-61856433-1', 'auto');
-			ga('send', 'pageview');
+		(function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
+		(i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
+		m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
+		})(window,document,'script','//www.google-analytics.com/analytics.js','ga');
+		
+		ga('create', 'UA-61502361-1', 'auto');
+		ga('send', 'pageview');
 		</script>
 	</head>
 	
 	<body style="margin:0 auto">
 
 		<header>
-			<div id="logo"><a href="/"><img alt="dctrees_logo" src="assets/dc64white.png"></a></div>
+			<div id="logo"><a href="/geocoder"><img alt="dctrees_logo" src="assets/geocoder_box.png"></a></div>
 		</header>
 
 			<section>
+
 				<div id="about">
 					<h2><a class="anchor" href="#about" id="about"><span class="octicon octicon-link"></span></a>About</h2>
 
-					<p>Geocoder placeholder</p>
+						<p>Provides a simple web interface for geocoding an uploaded CSV file, visualizing the resulting points on a <a href="http://leafletjs.com/" target="_blank">LeafletJS</a> slippy map, and downloading the resulting CSV, with additional columns giving latitide and longitude.</p> 
+
+						<p>For best results, the selected address column should include the point's full address (street, city, state/country). The map should help you figure out if anything went awry.</p>
+
+						<p>The geocoding functionality employs <a href="https://developers.google.com/maps/articles/geocodestrat#client" target="_blank">client-side geocoding</a>, courtesy of the Google Maps API. This enforces a limit of 2,500 requests per day and 5 per second, both per IP address. Because the API does not allow for batch geocoding, requests must be sent address by address. In other words, each geocoded row of the uploaded CSV counts toward those limits.</p>
+
+						<p>In light of these limits and because downloading is only permitted when all rows have been geocoded, I would not advise using the site for CSVs with more than a couple hundred rows. For most occasional uses, however, it should work well.</p>
+
+				</div>
+
+				<div id="contact">
+					<h2><a class="anchor" href="#contact" id="contact"><span class="octicon octicon-link"></span></a>Contact</h2>
+
+					<p>This site was developed by <a href="https://emanuelfeld.github.io" target="_blank">Emanuel Feld</a>.</p>
+
+					<p>Send questions, issues, ideas, feature requests, rants, or raves on <a href="https://twitter.com/evonfriedland" target="_blank">Twitter</a>
+					or by email at evonfriedland at gmail dot com.</p>
 
 				</div>
 
 			</section>
 
 			<footer class="footer">
-				<p><a href="/" class="link"> back to geocoding </a></p>
+				<p><a href="/geocoder" class="link"> back to geocoding </a></p>
 				<p>
 					<!-- Go to www.addthis.com/dashboard to customize your tools -->
 					<div class="addthis_sharing_toolbox"></div>
