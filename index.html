@@ -139,7 +139,9 @@
 			                    //upon button press, clear existing markers and begin geocoding
 			                    runGeocoder = function() {
 			                        var selected = document.getElementById('field_list').selectedOptions[0].text;
-				                    markers.clearLayers();		
+				                    markers.clearLayers();
+
+
 			                        logItems(selected);
 			                    }
 
@@ -149,14 +151,19 @@
 
 			                //iterate through selected column values for geocoding
 			                function logItems(selected) {
-			                    for (var x = 0; x < info.data.length; x++) {
-			                        geocodeThis(x, info.data[x][selected]);
-			                    }
+			                    var index = -1;
+			                	setInterval(function(){ 
+			                		index++; 
+			                		if(index < info.data.length) {
+			                			console.log(index);
+			                			console.log(selected);
+			                			geocodeThis(index, info.data[index][selected]);
+			                		}}, 600); 
 			                }
 
 			                //geocode each address value and send it off to be collected
 			                function geocodeThis(index, selected) {
-			                    	console.log(index);
+			                    	// console.log(index);
 				                    var address = info.data[index][selected];
 				                    geocoder.geocode({
 				                        'address': selected
@@ -174,7 +181,11 @@
 				                            'longitude': lon,
 				                            'address': selected
 				                        };
-				                        console.log(selected);
+			                        	var marker = L.marker([c['latitude'], c['longitude']]);
+			                        	marker.bindPopup(c['address'], { showOnMouseOver: true });
+				                        markers.addLayer(marker);
+				                        markers.addTo(map);
+				                        console.log(c);
 				                        var progress = document.getElementById("progress");
 				                        progress.textContent = (index + 1).toString() + " of " + info.data.length.toString() + " geocoded";
 				                        gatherPoints(c);
@@ -184,7 +195,7 @@
 				            //creates map and file outputs  
 			                function gatherPoints(c) {
 
-			                	console.log("Gathering points.")
+			                	// console.log("Gathering points.")
 			                	var data = info.data;
 
 			                	//initialize coordinates array, if first geocoded point
@@ -201,15 +212,10 @@
 			                        var lon_list = [];
 			                        var new_data = [];
 			                        for (var x = 0; x < data.length; x++) {
-			                        	var marker = L.marker([coordinates[x]['latitude'], coordinates[x]['longitude']]);
-			                        	marker.bindPopup(coordinates[x]['address'], { showOnMouseOver: true });
-				                        markers.addLayer(marker);
 			                            lat_list.push(coordinates[x]['latitude']);
 			                            lon_list.push(coordinates[x]['longitude']);
 			                            new_data[x] = jQuery.extend({}, data[x], coordinates[x]['latitude'], coordinates[x]['longitude']);
 			                        }
-
-			                        markers.addTo(map);
 
 			                        min_lat = Math.min.apply(Math, lat_list);
 			                        max_lat = Math.max.apply(Math, lat_list);
