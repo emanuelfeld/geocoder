@@ -92,6 +92,8 @@
 			    function gatherPoints(c, data, count) {
 			    	coordinates.push(c);
 			    	if (coordinates.length == count) {
+			    		console.log(coordinates);
+			    		console.log(data);
 				    	var lat_list=[];
 				    	var lon_list =[];
 				    	for (var x = 0; x < count; x++) {
@@ -108,7 +110,7 @@
 						    [min_lat, min_lon],
 						    [max_lat, max_lon]
 						]);
-
+				    	console.log(data);
 				    	var csv = Papa.unparse(data);
 
 						var button = document.getElementById('download');
@@ -150,8 +152,6 @@
 			            complete: function(results) {
 			                var fields = results['meta']['fields'];
 			                var data = results['data'];
-			                console.log(typeof(data));
-			                console.log(data);
 			                makeList(fields, data);
 			            }
 			        });
@@ -159,7 +159,7 @@
 
 			    function logItems(data, selected) {
 			    	var count = data.length;
-			    	console.log(data);
+			    	// console.log(data);
 			        for (var x = 0; x < count; x++) {
 			            geocodeThis(x, count, data, data[x][selected]);
 			        }
@@ -192,7 +192,7 @@
 
 			    	runGeocoder = function() {
 			    		var selected = document.getElementById('field_list').selectedOptions[0].text;
-			    		console.log(data);
+			    		// console.log(data);
 				        logItems(data, selected);
 			    	}
 
