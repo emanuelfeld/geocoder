@@ -16,7 +16,7 @@
 		<link rel="stylesheet" href="stylesheets/pygment_trac.css">
 		<link rel="shortcut icon" type="image/x-icon" href="assets/dc16.ico" >
 		<link href='http://fonts.googleapis.com/css?family=Dosis|Abel|Titillium+Web|Roboto+Condensed' rel='stylesheet' type='text/css'>
-		
+
 		<link rel="stylesheet" href="http://cdn.leafletjs.com/leaflet-0.7.3/leaflet.css" />
 		<script src="http://cdn.leafletjs.com/leaflet-0.7.3/leaflet.js"></script>
 
@@ -53,7 +53,8 @@
 
 			<div id="instructions"> 
 				<div id="title_box">
-					<span id="title" class="steps">Geocoder</span>
+					<div id="title" class="steps">Geocoder</div>
+					<div id="subtitle" class="steps"><a href="/geocoder/about" target="_blank">about</a> &nbsp <a href="https://twitter.com/evonfriedland" target="_blank">contact</a></div>
 				</div>
 				<div id="file_select" class="steps">
 					1. Select your file:<br>
@@ -149,6 +150,7 @@
 			            complete: function(results) {
 			                var fields = results['meta']['fields'];
 			                var data = results['data'];
+			                console.log(typeof(data));
 			                console.log(data);
 			                makeList(fields, data);
 			            }
@@ -164,6 +166,7 @@
 			    }
 
 			    function makeList(fields, data) {
+			    	var data = data;
 			        var field_list = document.getElementById('field_list');
 			        field_list.id = "field_list";
 			        $(".option").remove();
@@ -187,8 +190,9 @@
 				        console.log(selected);
 			    	}
 
-			    	runGeocoder = function(data) {
+			    	runGeocoder = function() {
 			    		var selected = document.getElementById('field_list').selectedOptions[0].text;
+			    		console.log(data);
 				        logItems(data, selected);
 			    	}
 

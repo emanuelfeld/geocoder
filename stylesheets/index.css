@@ -16,6 +16,19 @@
     color: white;
 }
 
+#subtitle {
+    font:15px Dosis,"Helvetica Neue",Helvetica,Arial,sans-serif;
+    color: white;
+    padding-top:0;
+}
+
+#subtitle a {
+    text-decoration: none;
+    color: white;
+}
+
+
+
 .steps {
     padding:15px 20px 5px 20px;
 }
@@ -40,7 +53,8 @@
     padding:0 10px 0 0
 }
 
-footer {
+#footer {
+    float:bottom;
     padding:15px 15px 25px
 }
 
