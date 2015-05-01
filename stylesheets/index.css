@@ -74,7 +74,7 @@ html,body {
     margin:0
 }
 
-#instructions a {
+.step a {
     text-decoration: none;
     color:#222;
 }
