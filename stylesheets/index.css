@@ -27,10 +27,12 @@
     color: white;
 }
 
-
-
 .steps {
     padding:15px 20px 5px 20px;
+}
+
+#progress {
+    font:11px/normal 'Lucida Grande';;
 }
 
 #instructions {

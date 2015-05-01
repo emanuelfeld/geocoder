@@ -63,6 +63,7 @@
 				<div id="run_geocoder" class="steps">
 					3. Run the geocoder:<br>
 					<button id="geocode" type="submit" disabled="disabled">Go!</button>
+					<span id="progress"></span>
 				</div>
 				<div id="download_result" class="steps">
 					4. Download the result:<br>
@@ -125,6 +126,8 @@
 
 			                    //once a field value has been selected from the dropdown, enable the geocoder button
 			                    toggleGeocoder = function() {
+			                        var progress = document.getElementById("progress");
+			                        progress.textContent = "";
 			                        var geocode = document.getElementById('geocode');
 			                        var selected = document.getElementById('field_list').selectedOptions[0].text;
 			                        if (selected != "This Column") {
@@ -168,14 +171,18 @@
 				                        var c = {
 				                            'index': index,
 				                            'latitude': lat,
-				                            'longitude': lon
+				                            'longitude': lon,
+				                            'address': selected
 				                        };
-				                        gatherPoints(c, selected);
+				                        console.log(selected);
+				                        var progress = document.getElementById("progress");
+				                        progress.textContent = (index + 1).toString() + " of " + info.data.length.toString() + " geocoded";
+				                        gatherPoints(c);
 				                    });
 				                }
 
 				            //creates map and file outputs  
-			                function gatherPoints(c, address) {
+			                function gatherPoints(c) {
 
 			                	console.log("Gathering points.")
 			                	var data = info.data;
@@ -195,14 +202,11 @@
 			                        var new_data = [];
 			                        for (var x = 0; x < data.length; x++) {
 			                        	var marker = L.marker([coordinates[x]['latitude'], coordinates[x]['longitude']]);
-			                        	marker.bindPopup(address, { showOnMouseOver: true });
-
-			                        	console.log(marker);
+			                        	marker.bindPopup(coordinates[x]['address'], { showOnMouseOver: true });
 				                        markers.addLayer(marker);
-				                        console.log("Adding marker.")
 			                            lat_list.push(coordinates[x]['latitude']);
 			                            lon_list.push(coordinates[x]['longitude']);
-			                            new_data[x] = jQuery.extend({}, data[x], coordinates[x]);
+			                            new_data[x] = jQuery.extend({}, data[x], coordinates[x]['latitude'], coordinates[x]['longitude']);
 			                        }
 
 			                        markers.addTo(map);
@@ -218,7 +222,7 @@
 			                        ]);
 
 			                        var csv = Papa.unparse(new_data);
-
+			                        console.log(csv);
 			                        //enable download button
 			                        var button = document.getElementById('download');
 			                        button.removeAttribute("disabled");
@@ -236,7 +240,7 @@
 			        });
 			    }
 			}
-			
+
 			window.onload = main;
 
 		</script>
