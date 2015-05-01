@@ -80,6 +80,8 @@
 
 			    var coordinates = [];
 			    var lat, lon;
+			    var failures = 0;
+			    var successes = 0;
 			    var geocoder = new google.maps.Geocoder();
 
 			    //listen for data upload. right now only csv/tsv type files. also presumes that file contains headers.
@@ -100,11 +102,13 @@
 			        var files = evt.target.files;
 			        console.log(files);
 
+			        var info = {}
+
 			        var parsed = Papa.parse(files[0], {
 			            header: true,
 			            complete: function(results) {
 
-			            	var info = results;
+			            	info = results;
 
 			                makeList();
 
@@ -138,10 +142,10 @@
 
 			                    //upon button press, clear existing markers and begin geocoding
 			                    runGeocoder = function() {
+			                    	failures = 0;
+			                    	successes = 0;
 			                        var selected = document.getElementById('field_list').selectedOptions[0].text;
 				                    markers.clearLayers();
-
-
 			                        logItems(selected);
 			                    }
 
@@ -181,13 +185,19 @@
 				                            'longitude': lon,
 				                            'address': selected
 				                        };
-			                        	var marker = L.marker([c['latitude'], c['longitude']]);
-			                        	marker.bindPopup(c['address'], { showOnMouseOver: true });
-				                        markers.addLayer(marker);
-				                        markers.addTo(map);
+
+				                        if (lat !== null & lon !== null) {
+				                        	successes++;
+				                        	var marker = L.marker([c['latitude'], c['longitude']]);
+				                        	marker.bindPopup(c['address'], { showOnMouseOver: true });
+					                        markers.addLayer(marker);
+					                        markers.addTo(map);
+				                        } else {
+				                        	failures++;
+				                        }
 				                        console.log(c);
 				                        var progress = document.getElementById("progress");
-				                        progress.textContent = (index + 1).toString() + " of " + info.data.length.toString() + " geocoded";
+				                        progress.textContent = successes.toString() + " of " + info.data.length.toString() + " geocoded and " + failures + " failures";
 				                        gatherPoints(c);
 				                    });
 				                }
