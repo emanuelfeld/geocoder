@@ -102,6 +102,12 @@
 				var markers = L.featureGroup();
 				markers.addTo(map);
 
+
+				  $.get("http://httpbin.org/ip", function(data) {
+				  	console.log(data);
+				  });
+
+
 			    function handleFileSelect(evt) {
 			        var files = evt.target.files;
 			        var parsed = Papa.parse(files[0], {
