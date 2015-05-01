@@ -44,22 +44,38 @@
 
 	<body style="margin:0 auto">
 		
-		<header class="header">
-			<!-- <div id="logo"><img src="assets/dc64green.png"></div> -->
-			<div id="title"> 
-				<span id="plant">geocode this file</span>
-				<input type="file" value="hello" id="files" name="files[]" />
-				using
-				<select id="field_list">
-					<option selected="selected" disabled="disabled">this column</option>
+<!-- 		<header class="header">
+ -->			<!-- <div id="logo"><img src="assets/dc64green.png"></div> -->
+
+ <div id="contents">
+ 	<div style="display: table-row">
+
+			<div id="instructions"> 
+				<div id="title_box">
+					<span id="title" class="steps">Geocoder</span>
+				</div>
+				<div id="file_select" class="steps">
+					1. Select your file:<br>
+					<input type="file" value="hello" id="files" name="files[]" />					
+				</div>
+				<div id="column_select" class="steps">
+					2. Choose a column:<br>
+				<select id="field_list" disabled="disabled" class="steps">
+					<option selected="selected" disabled="disabled">This Column</option>
 				</select>
-				<button id="geocode" type="submit" disabled="disabled">go!</button>
-				<button id="download" type="submit" disabled="disabled">download</button>
+				</div>
+				<div id="run_geocoder" class="steps">
+					3. Run the geocoder:<br>
+					<button id="geocode" type="submit" disabled="disabled">Go!</button>
+				</div>
+				<div id="download_result" class="steps">
+					4. Download the result:<br>
+					<button id="download" type="submit" disabled="disabled">Download</button>
+				</div>
 			</div>
-		</header>
 
 		<div id="map"></div>
-
+	</div>
 		<script src="http://libs.cartocdn.com/cartodb.js/v3/3.13/cartodb.js"></script>
 
 		<script>
@@ -85,20 +101,23 @@
 				    	max_lat = Math.max.apply(Math, lat_list);
 				    	min_lon = Math.min.apply(Math, lon_list);
 				    	max_lon = Math.max.apply(Math, lon_list);
-				    	var csv = Papa.unparse(data);
+
 				    	map.fitBounds([
 						    [min_lat, min_lon],
 						    [max_lat, max_lon]
 						]);
 
+				    	var csv = Papa.unparse(data);
+
 						var button = document.getElementById('download');
 			            button.removeAttribute("disabled");
 			            button.textContent = "";
+
 			            var a = document.createElement('a');
 			            a.setAttribute("style","text-decoration: none; color: #222")
-						a.innerHTML = "hello";
-						a.href     = 'data:application/csv;charset=utf-8,' + encodeURIComponent(csv);
-						a.target   = '_blank';
+						a.innerHTML = "Download";
+						a.href = 'data:application/csv;charset=utf-8,' + encodeURIComponent(csv);
+						a.target = '_blank';
 						a.download = 'geocoded.csv';
 						button.appendChild(a);
 			    	}
@@ -135,11 +154,11 @@
 			        });
 			    }
 
-			    function logItems(data) {
+			    function logItems(data, selected) {
 			    	var count = data.length;
 			    	console.log(data);
 			        for (var x = 0; x < count; x++) {
-			            geocodeThis(x, count, data, data[x]['Address']);
+			            geocodeThis(x, count, data, data[x][selected]);
 			        }
 			    }
 
@@ -154,12 +173,27 @@
 			            op.text = fields[i];
 			            field_list.options.add(op);
 			        }
-			        var where = document.getElementById('title');
-			        where.appendChild(field_list);
-			        var selected = document.getElementById('field_list').selectedOptions[0].text;
-			        logItems(data);
-			    }
+			       	var column_select = document.getElementById('column_select');
+	                field_list.removeAttribute("disabled");
+			        column_select.appendChild(field_list);
 
+			     	toggleGeocoder = function() {
+				        var geocode = document.getElementById('geocode');
+				        var selected = document.getElementById('field_list').selectedOptions[0].text;
+				        if (selected!="This Column") {
+				        	geocode.removeAttribute("disabled");
+				        } 
+				        console.log(selected);
+			    	}
+
+			    	runGeocoder = function(data) {
+			    		var selected = document.getElementById('field_list').selectedOptions[0].text;
+				        logItems(data, selected);
+			    	}
+
+				    document.getElementById('field_list').addEventListener('change', toggleGeocoder, false);
+					document.getElementById('geocode').addEventListener('click', runGeocoder, false);
+			    }
 
 			    document.getElementById('files').addEventListener('change', handleFileSelect, false);
 
@@ -176,15 +210,14 @@
 
 		</script>
 
-		<footer class="footer">
+<!-- 		<footer class="footer">
 			<a href="about.html" class="link"> about </a> 
 			<a href="about.html#contact" class="link"> contact </a>
-			<!-- Go to www.addthis.com/dashboard to customize your tools -->
 			<div style="display:inline-block">
 				<div class="addthis_sharing_toolbox"></div>	
 			</div>
 		</footer>	
-
+ -->
 		<script src="javascripts/scale.fix.js"></script>
 		<!-- Go to www.addthis.com/dashboard to customize your tools -->
 		<script type="text/javascript" src="//s7.addthis.com/js/300/addthis_widget.js#pubid=ra-553071fc49386392" async="async"></script>
