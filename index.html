@@ -155,8 +155,8 @@
 			                	setInterval(function(){ 
 			                		index++; 
 			                		if(index < info.data.length) {
-			                			console.log(index);
-			                			console.log(selected);
+			                			// console.log(index);
+			                			// console.log(selected);
 			                			geocodeThis(index, info.data[index][selected]);
 			                		}}, 600); 
 			                }
@@ -214,7 +214,7 @@
 			                        for (var x = 0; x < data.length; x++) {
 			                            lat_list.push(coordinates[x]['latitude']);
 			                            lon_list.push(coordinates[x]['longitude']);
-			                            new_data[x] = jQuery.extend({}, data[x], coordinates[x]['latitude'], coordinates[x]['longitude']);
+			                            new_data[x] = jQuery.extend({}, data[x], {'latitude': coordinates[x]['latitude']}, {'longitude': coordinates[x]['longitude']});
 			                        }
 
 			                        min_lat = Math.min.apply(Math, lat_list);
