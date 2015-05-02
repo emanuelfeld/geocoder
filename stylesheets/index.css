@@ -30,6 +30,10 @@
     color:#222;
 }
 
+#geojson a {
+    color:#222;
+}
+
 .steps {
     padding:15px 20px 5px 20px;
 }

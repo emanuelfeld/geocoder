@@ -67,7 +67,8 @@
 				</div>
 				<div id="download_result" class="steps">
 					4. Download the result:<br>
-					<button id="download" type="submit" disabled="disabled">Download</button>
+					<button id="download" type="submit" disabled="disabled">CSV</button><br>
+					<button id="geojson" type="submit" disabled="disabled">GeoJSON</button>
 				</div>
 			</div>
 
@@ -204,12 +205,20 @@
 			    	if (coordinate_list.length === info.data.length) {
 			    		var lat_list = [];
 			    		var lon_list = [];
-			    		var output = [];
+			    		var output_csv = [];
+			    		var output_geojson = [];
 			    		for (var i = 0; i < info.data.length; i++) {
 			    			lat_list.push(coordinate_list[i].latitude);
 			    			lon_list.push(coordinate_list[i].longitude);
-			    			output[i] = jQuery.extend({}, info.data[i], {'latitude': coordinate_list[i].latitude}, {'longitude': coordinate_list[i].longitude});
+			    			output_csv[i] = jQuery.extend({}, info.data[i], {'latitude': coordinate_list[i].latitude}, {'longitude': coordinate_list[i].longitude});
+			    			output_geojson[i] = jQuery.extend({}, {'properties': info.data[i]}, {'type': 'Feature', 'geometry': {'type': 'Point', 'coordinates': [coordinate_list[i].longitude, coordinate_list[i].latitude]}});
+
 			    		}
+
+			    		output_geojson = { 'type': 'FeatureCollection', 'features': output_geojson };
+			    		output_geojson = JSON.stringify(output_geojson, null, '\t');
+
+			    		console.log(output_geojson);
 
                         min_lat = Math.min.apply(Math, lat_list);
                         max_lat = Math.max.apply(Math, lat_list);
@@ -218,15 +227,26 @@
 
                         map.fitBounds([[min_lat, min_lon], [max_lat, max_lon]]);
 
-                        var csv = Papa.unparse(output);
+                        var csv = Papa.unparse(output_csv);
 
                         console.log(csv);
+
+                        var geojson = document.getElementById('geojson');
+                        geojson.removeAttribute("disabled");
+                        geojson.textContent = "";
+                        var geojson_link = document.createElement('a');
+                        geojson_link.innerHTML = "GeoJSON";
+                        geojson_link.href = "data:text/json;charset=utf-8," + encodeURIComponent(output_geojson);
+                        geojson_link.target = '_blank';
+                        geojson_link.download = "geojson.json";
+                        geojson.appendChild(geojson_link);
+
 
                         var download = document.getElementById('download');
                         download.removeAttribute("disabled");
                         download.textContent = "";
                         var download_link = document.createElement('a');
-                        download_link.innerHTML = "Download";
+                        download_link.innerHTML = "CSV";
                         download_link.href = 'data:application/csv;charset=utf-8,' + encodeURIComponent(csv);
                         download_link.target = '_blank';
                         download_link.download = 'geocoded.csv';
