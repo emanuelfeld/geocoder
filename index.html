@@ -172,8 +172,8 @@
 							lat = gmap[0].geometry.location['A'];
 							lon = gmap[0].geometry.location['F'];
 						} else {
-							lat = null;
-							lon = null;
+							lat = 0;
+							lon = 0;
 						}
 						var address_info = {
 							'index': i,
@@ -181,13 +181,13 @@
 							'longitude': lon,
 							'address': address
 						};
-						if (lat !== null & lon !== null) {
+						if (lat === 0 & lon === 0) {
+							failures++;							
+						} else {
 							successes++;
 							var marker = L.marker([address_info.latitude, address_info.longitude]);
 							marker.bindPopup(address_info.address);
 							markers.addLayer(marker);
-						} else {
-							failures++;
 						}
 						var progress = document.getElementById('progress');
 						progress.textContent = successes + " of " + info.data.length + " geocoded and " + failures + " failures";
