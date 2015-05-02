@@ -79,180 +79,200 @@
 
 			function main() {
 
-			    var coordinates = [];
-			    var lat, lon;
-			    var info;
-			    var field_list;
-			    var failures = 0;
-			    var successes = 0;
-			    var geocoder = new google.maps.Geocoder();
+				var coordinates = [];
+				var lat, lon;
+				var info;
+				var field_list;
+				var failures = 0;
+				var successes = 0;
+				var geocoder = new google.maps.Geocoder();
 
-			    //listen for data upload. right now only csv/tsv type files. also presumes that file contains headers.
-			    document.getElementById('files').addEventListener('change', handleFileSelect, false);
-			    document.getElementById('field_list').addEventListener('change', toggleGeocoder, false);
-			    document.getElementById('geocode_button').addEventListener('click', setupGeocoder, false);
+				//listen for data upload. right now only csv/tsv type files. also presumes that file contains headers.
+				document.getElementById('files').addEventListener('change', handleFileSelect, false);
+				document.getElementById('field_list').addEventListener('change', toggleGeocoder, false);
+				document.getElementById('geocode_button').addEventListener('click', setupGeocoder, false);
 
-			    //initialize map
-			    var map = L.map('map').setView([51.505, -0.09], 2);
-			    L.tileLayer('http://{s}.tiles.mapbox.com/v3/evonfriedland.m2bo5h3j/{z}/{x}/{y}.png', {
-			        attribution: 'Map data &copy; <a href="http://openstreetmap.org">OpenStreetMap</a> contributors, <a href="http://creativecommons.org/licenses/by-sa/2.0/">CC-BY-SA</a>, Imagery © <a href="http://mapbox.com">Mapbox</a>',
-			        maxZoom: 18
-			    }).addTo(map);
+				//initialize map
+				var map = L.map('map').setView([51.505, -0.09], 2);
+				L.tileLayer('http://{s}.tiles.mapbox.com/v3/evonfriedland.m2bo5h3j/{z}/{x}/{y}.png', {
+					attribution: 'Map data &copy; <a href="http://openstreetmap.org">OpenStreetMap</a> contributors, <a href="http://creativecommons.org/licenses/by-sa/2.0/">CC-BY-SA</a>, Imagery © <a href="http://mapbox.com">Mapbox</a>',
+					maxZoom: 18
+				}).addTo(map);
 
-			    //set up feature group to gather markers
+				//set up feature group to gather markers
 				var markers = L.featureGroup();
 				markers.addTo(map);
 
-			    function handleFileSelect(evt) {
-			        var files = evt.target.files;
-			        var parsed = Papa.parse(files[0], {
-			        	header: true,
-			        	complete: function(results) {
-			        		info = results;
-			        		console.log(info);
-			        		makeList();
-			        	}
-			        });
-			    }
+				function handleFileSelect(evt) {
+					var files = evt.target.files;
+					var parsed = Papa.parse(files[0], {
+						header: true,
+						complete: function(results) {
+							info = results;
+							console.log(info);
+							makeList();
+						}
+					});
+				}
 
-			    function makeList() {
-			    	console.log("Accessing makeList");
-			    	$(".option").remove();
-			    	field_list = document.getElementById('field_list');
-			    	field_list.removeAttribute("disabled");
+				function makeList() {
+					console.log("Accessing makeList");
+					$(".option").remove();
+					field_list = document.getElementById('field_list');
+					field_list.removeAttribute("disabled");
 
-			    	for (var i = 0; i < info.meta.fields.length; i++) {
-                        var field_option = new Option();
-                        field_option.setAttribute("class", "option");
-                        field_option.value = info.meta.fields[i];
-                        field_option.text = info.meta.fields[i];
-                        field_list.options.add(field_option);
-			    	}
-			    }
+					for (var i = 0; i < info.meta.fields.length; i++) {
+						var field_option = new Option();
+						field_option.setAttribute("class", "option");
+						field_option.value = info.meta.fields[i];
+						field_option.text = info.meta.fields[i];
+						field_list.options.add(field_option);
+					}
+				}
 
-			    function toggleGeocoder() {
-                    var geocode_button = document.getElementById('geocode_button');
-                    var selected = document.getElementById('field_list').selectedOptions[0].text;
-                    if (selected != "This Column") {
-                        geocode_button.removeAttribute("disabled");
-                    } else {
-                        geocode_button.setAttribute("disabled", "disabled");                    	
-                    }
-                    console.log(selected);
-			    }
+				function toggleGeocoder() {
+					var geocode_button = document.getElementById('geocode_button');
+					var selected = document.getElementById('field_list').selectedOptions[0].text;
+					if (selected != "This Column") {
+						geocode_button.removeAttribute("disabled");
+					} else {
+						geocode_button.setAttribute("disabled", "disabled");
+					}
+					console.log(selected);
+				}
 
-			    function setupGeocoder() {
-			    	failures = 0;
-			    	successes = 0;
-			    	markers.clearLayers();
+				function setupGeocoder() {
+					failures = 0;
+					successes = 0;
+					markers.clearLayers();
 
-			    	var selected_field = document.getElementById('field_list').selectedOptions[0].text;
+					var selected_field = document.getElementById('field_list').selectedOptions[0].text;
 
-			    	iterateRows(selected_field);
-			    }
+					iterateRows(selected_field);
+				}
 
-			    function iterateRows(s) {
-			    	var index = -1;
-			    	var begin = setInterval(function(){
-			    		index++;
-			    		if (index < info.data.length) {
-			    			geocodeRow(index, s);
-			    		} else {
-			    			clearInterval(begin);
-			    		}
-			    	}, 1000);
-			    }
+				function iterateRows(s) {
+					var index = -1;
+					var begin = setInterval(function() {
+						index++;
+						if (index < info.data.length) {
+							geocodeRow(index, s);
+						} else {
+							clearInterval(begin);
+						}
+					}, 1000);
+				}
 
-			    function geocodeRow(i, s) {
-			    	var address = info.data[i][s];
-			    	geocoder.geocode({ 'address': address }, function(gmap, status) {
-			    		if (status === google.maps.GeocoderStatus.OK) {
-			    			lat = gmap[0].geometry.location['A'];
-			    			lon = gmap[0].geometry.location['F'];
-			    		} else {
-			    			lat = null;
-			    			lon = null;
-			    		}
-			    		var address_info = {
-			    			'index': i,
-			    			'latitude': lat,
-			    			'longitude': lon,
-			    			'address': address
-			    		};
-			    		if (lat !== null & lon !== null) {
-			    			successes++;
-			    			var marker = L.marker([address_info.latitude, address_info.longitude]);
-			    			marker.bindPopup(address_info.address);
-			    			markers.addLayer(marker);
-			    		} else {
-			    			failures++;
-			    		}
-			    		var progress = document.getElementById('progress');
-			    		progress.textContent = successes + " of " + info.data.length + " geocoded and " + failures + " failures";
+				function geocodeRow(i, s) {
+					var address = info.data[i][s];
+					geocoder.geocode({
+						'address': address
+					}, function(gmap, status) {
+						if (status === google.maps.GeocoderStatus.OK) {
+							lat = gmap[0].geometry.location['A'];
+							lon = gmap[0].geometry.location['F'];
+						} else {
+							lat = null;
+							lon = null;
+						}
+						var address_info = {
+							'index': i,
+							'latitude': lat,
+							'longitude': lon,
+							'address': address
+						};
+						if (lat !== null & lon !== null) {
+							successes++;
+							var marker = L.marker([address_info.latitude, address_info.longitude]);
+							marker.bindPopup(address_info.address);
+							markers.addLayer(marker);
+						} else {
+							failures++;
+						}
+						var progress = document.getElementById('progress');
+						progress.textContent = successes + " of " + info.data.length + " geocoded and " + failures + " failures";
 
-			    		collectPoints(address_info);
-			    	});
-			    }
+						collectPoints(address_info);
+					});
+				}
 
-			    function collectPoints(a) {
-			    	console.log(a);
-			    	if (a.index === 0) {
-			    		coordinate_list = [];
-			    	}
+				function collectPoints(a) {
+					console.log(a);
+					if (a.index === 0) {
+						coordinate_list = [];
+					}
 
-			    	coordinate_list.push(a);
+					coordinate_list.push(a);
 
-			    	if (coordinate_list.length === info.data.length) {
-			    		var lat_list = [];
-			    		var lon_list = [];
-			    		var output_csv = [];
-			    		var output_geojson = [];
-			    		for (var i = 0; i < info.data.length; i++) {
-			    			lat_list.push(coordinate_list[i].latitude);
-			    			lon_list.push(coordinate_list[i].longitude);
-			    			output_csv[i] = jQuery.extend({}, info.data[i], {'latitude': coordinate_list[i].latitude}, {'longitude': coordinate_list[i].longitude});
-			    			output_geojson[i] = jQuery.extend({}, {'properties': info.data[i]}, {'type': 'Feature', 'geometry': {'type': 'Point', 'coordinates': [coordinate_list[i].longitude, coordinate_list[i].latitude]}});
+					if (coordinate_list.length === info.data.length) {
+						var lat_list = [];
+						var lon_list = [];
+						var output_csv = [];
+						var output_geojson = [];
+						for (var i = 0; i < info.data.length; i++) {
+							lat_list.push(coordinate_list[i].latitude);
+							lon_list.push(coordinate_list[i].longitude);
+							output_csv[i] = jQuery.extend({}, info.data[i], {
+								'latitude': coordinate_list[i].latitude
+							}, {
+								'longitude': coordinate_list[i].longitude
+							});
+							output_geojson[i] = jQuery.extend({}, {
+								'properties': info.data[i]
+							}, {
+								'type': 'Feature',
+								'geometry': {
+									'type': 'Point',
+									'coordinates': [coordinate_list[i].longitude, coordinate_list[i].latitude]
+								}
+							});
 
-			    		}
+						}
 
-			    		output_geojson = { 'type': 'FeatureCollection', 'features': output_geojson };
-			    		output_geojson = JSON.stringify(output_geojson, null, '\t');
+						output_geojson = {
+							'type': 'FeatureCollection',
+							'features': output_geojson
+						};
+						output_geojson = JSON.stringify(output_geojson, null, '\t');
 
-			    		console.log(output_geojson);
+						console.log(output_geojson);
 
-                        min_lat = Math.min.apply(Math, lat_list);
-                        max_lat = Math.max.apply(Math, lat_list);
-                        min_lon = Math.min.apply(Math, lon_list);
-                        max_lon = Math.max.apply(Math, lon_list);
+						min_lat = Math.min.apply(Math, lat_list);
+						max_lat = Math.max.apply(Math, lat_list);
+						min_lon = Math.min.apply(Math, lon_list);
+						max_lon = Math.max.apply(Math, lon_list);
 
-                        map.fitBounds([[min_lat, min_lon], [max_lat, max_lon]]);
+						map.fitBounds([
+							[min_lat, min_lon],
+							[max_lat, max_lon]
+						]);
 
-                        var csv = Papa.unparse(output_csv);
+						var csv = Papa.unparse(output_csv);
 
-                        console.log(csv);
+						console.log(csv);
 
-                        var geojson = document.getElementById('geojson');
-                        geojson.removeAttribute("disabled");
-                        geojson.textContent = "";
-                        var geojson_link = document.createElement('a');
-                        geojson_link.innerHTML = "GeoJSON";
-                        geojson_link.href = "data:text/json;charset=utf-8," + encodeURIComponent(output_geojson);
-                        geojson_link.target = '_blank';
-                        geojson_link.download = "geojson.json";
-                        geojson.appendChild(geojson_link);
+						var geojson = document.getElementById('geojson');
+						geojson.removeAttribute("disabled");
+						geojson.textContent = "";
+						var geojson_link = document.createElement('a');
+						geojson_link.innerHTML = "GeoJSON";
+						geojson_link.href = "data:text/json;charset=utf-8," + encodeURIComponent(output_geojson);
+						geojson_link.target = '_blank';
+						geojson_link.download = "geojson.json";
+						geojson.appendChild(geojson_link);
 
 
-                        var download = document.getElementById('download');
-                        download.removeAttribute("disabled");
-                        download.textContent = "";
-                        var download_link = document.createElement('a');
-                        download_link.innerHTML = "CSV";
-                        download_link.href = 'data:application/csv;charset=utf-8,' + encodeURIComponent(csv);
-                        download_link.target = '_blank';
-                        download_link.download = 'geocoded.csv';
-                        download.appendChild(download_link);
-			    	}
-			    }
+						var download = document.getElementById('download');
+						download.removeAttribute("disabled");
+						download.textContent = "";
+						var download_link = document.createElement('a');
+						download_link.innerHTML = "CSV";
+						download_link.href = 'data:application/csv;charset=utf-8,' + encodeURIComponent(csv);
+						download_link.target = '_blank';
+						download_link.download = 'geocoded.csv';
+						download.appendChild(download_link);
+					}
+				}
 
 			}
 
