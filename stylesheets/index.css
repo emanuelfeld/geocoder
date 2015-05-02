@@ -51,6 +51,36 @@
     display: table-cell;
 }
 
+#failure_title {
+    font:25px Dosis,"Helvetica Neue",Helvetica,Arial,sans-serif;
+    color:white;
+}
+
+#failure_list {
+    font:11px/normal 'Lucida Grande';;
+}
+
+#container {
+    display: table-cell;
+    position: relative;
+}
+
+#failures {
+    height:100%;
+    width:100%;    
+    position: absolute;
+    top: 0;
+    left: 0;
+    z-index: -1000;
+    background-color:white;
+}
+
+#geocoding {
+    background-color:white;
+    z-index: 1000;
+}
+
+
 #map {
     height:100%;
     width:65%;

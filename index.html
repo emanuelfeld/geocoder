@@ -64,7 +64,9 @@
 				<div id="run_geocoder" class="steps">
 					3. Run the geocoder:<br>
 					<button id="geocode_button" type="submit" disabled="disabled">Go!</button>
-					<span id="progress"></span>
+					<span id="progress"></span><br>
+					<button id="failure_button" type="submit" disabled="disabled">View Failures</button>
+					<div id="failure_list" style="display: none;"></div>
 				</div>
 				<div id="download_result" class="steps">
 					4. Download the result:<br>
@@ -73,10 +75,11 @@
 				</div>
 			</div>
 
-		<div id="map"></div>
+			<div id="map"></div>
 	</div>
 
 		<script>
+
 
 			function main() {
 
@@ -94,6 +97,18 @@
 				document.getElementById('field_list').addEventListener('change', toggleGeocoder, false);
 				document.getElementById('list_button').addEventListener('click', makeList, false);
 				document.getElementById('geocode_button').addEventListener('click', setupGeocoder, false);
+				document.getElementById('failure_button').addEventListener('click', toggleFailure, false);
+
+
+			    function toggleFailure() {
+			    	if ($("#failure_list").attr("style") === "display: none;") {
+				        $("#failure_list").attr("style","display: block;");
+				        $("#failure_button").text("Hide Failures");			    		
+			    	} else {
+				        $("#failure_list").attr("style","display: none;");
+				        $("#failure_button").text("Show Failures");			    					    		
+			    	}
+			    }
 
 				//initialize map
 				var map = L.map('map').setView([51.505, -0.09], 2);
@@ -174,6 +189,9 @@
 					successes = 0;
 					markers.clearLayers();
 
+					var failure_button = document.getElementById('failure_button');
+					failure_button.removeAttribute('disabled');
+
 					var selected_fields = [];
 					var field_lists = document.getElementsByClassName('field_list');
 
@@ -224,7 +242,8 @@
 							'address': address
 						};
 						if (lat === 0 & lon === 0) {
-							failures++;							
+							failures++;
+							$("#failure_list").append("<br>Row " + i +": " + address);
 						} else {
 							successes++;
 							var marker = L.marker([address_info.latitude, address_info.longitude]);
