@@ -56,9 +56,10 @@
 				</div>
 				<div id="column_select" class="steps">
 					2. Choose a column:<br>
-				<select id="field_list" disabled="disabled" class="steps">
+				<select class="field_list" id="field_list" disabled="disabled">
 					<option selected="selected" disabled="disabled">This Column</option>
 				</select>
+				<button id="list_button" type="submit" disabled="disabled">Add Another</button>				
 				</div>
 				<div id="run_geocoder" class="steps">
 					3. Run the geocoder:<br>
@@ -83,6 +84,7 @@
 				var lat, lon;
 				var info;
 				var field_list;
+				var field_index = 0;
 				var failures = 0;
 				var successes = 0;
 				var geocoder = new google.maps.Geocoder();
@@ -90,6 +92,7 @@
 				//listen for data upload. right now only csv/tsv type files. also presumes that file contains headers.
 				document.getElementById('files').addEventListener('change', handleFileSelect, false);
 				document.getElementById('field_list').addEventListener('change', toggleGeocoder, false);
+				document.getElementById('list_button').addEventListener('click', makeList, false);
 				document.getElementById('geocode_button').addEventListener('click', setupGeocoder, false);
 
 				//initialize map
@@ -109,17 +112,40 @@
 						header: true,
 						complete: function(results) {
 							info = results;
+							console.log("Uploading file.")
 							console.log(info);
+							var list_button = document.getElementById("list_button");
+							list_button.removeAttribute("disabled");
+							field_index = 0;
+							$(".option").remove();
+							$(".additional").remove();
 							makeList();
 						}
 					});
 				}
 
 				function makeList() {
-					console.log("Accessing makeList");
-					$(".option").remove();
-					field_list = document.getElementById('field_list');
-					field_list.removeAttribute("disabled");
+					console.log("Making list.");
+					var list_number = document.createAttribute("list_number");
+
+					if (field_index === 0) {
+						field_list = document.getElementById('field_list');
+						field_list.removeAttribute("disabled");						
+						field_list.setAttribute("list_number",field_index);
+					} else {
+						var list_div = document.createElement('div');
+						list_div.setAttribute("class", "additional");
+						field_list = document.createElement('select');
+						field_list.setAttribute("class","field_list");
+						var list_placeholder = document.createElement('option');
+						list_placeholder.selected = "selected";
+						list_placeholder.textContent = "And This Column";
+						field_list.setAttribute("list_number",field_index);
+						field_list.appendChild(list_placeholder);
+						var column_select = document.getElementById("column_select");
+						column_select.appendChild(list_div);
+						list_div.appendChild(field_list);
+					}
 
 					for (var i = 0; i < info.meta.fields.length; i++) {
 						var field_option = new Option();
@@ -128,6 +154,9 @@
 						field_option.text = info.meta.fields[i];
 						field_list.options.add(field_option);
 					}
+
+					field_index++;
+
 				}
 
 				function toggleGeocoder() {
@@ -138,7 +167,6 @@
 					} else {
 						geocode_button.setAttribute("disabled", "disabled");
 					}
-					console.log(selected);
 				}
 
 				function setupGeocoder() {
@@ -146,9 +174,17 @@
 					successes = 0;
 					markers.clearLayers();
 
-					var selected_field = document.getElementById('field_list').selectedOptions[0].text;
+					var selected_fields = [];
+					var field_lists = document.getElementsByClassName('field_list');
 
-					iterateRows(selected_field);
+					[].forEach.call(field_lists, function (list) {
+						var selected_field = list.selectedOptions[0].text;
+						if (selected_field !== 'And This Column') {
+							selected_fields.push(selected_field);
+						}
+					});
+
+					iterateRows(selected_fields);
 				}
 
 				function iterateRows(s) {
@@ -164,7 +200,13 @@
 				}
 
 				function geocodeRow(i, s) {
-					var address = info.data[i][s];
+
+					var address = [];
+					[].forEach.call(s, function (x) {
+						address.push(info.data[i][x]);
+					});
+					address = address.join(" ");
+
 					geocoder.geocode({
 						'address': address
 					}, function(gmap, status) {
