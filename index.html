@@ -102,7 +102,7 @@
 
 			    function toggleFailure() {
 			    	if ($("#failure_list").attr("style") === "display: none;") {
-				        $("#failure_list").attr("style","display: block;");
+				        $("#failure_list").attr("style","margin-top:10px; display: block; height:120px; width:100%; border:none; overflow:auto;");
 				        $("#failure_button").text("Hide Failures");			    		
 			    	} else {
 				        $("#failure_list").attr("style","display: none;");
@@ -245,7 +245,7 @@
 						};
 						if (lat === 0 & lon === 0) {
 							failures++;
-							$("#failure_list").append("<br>Row " + i +": " + address);
+							$("#failure_list").append("Row " + i +": " + address + "<br>");
 						} else {
 							successes++;
 							var marker = L.marker([address_info.latitude, address_info.longitude]);

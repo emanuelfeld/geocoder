@@ -57,7 +57,8 @@
 }
 
 #failure_list {
-    font:11px/normal 'Lucida Grande';;
+    font:11px/normal 'Lucida Grande';
+    padding-top:5px;
 }
 
 #container {
