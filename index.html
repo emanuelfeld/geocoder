@@ -189,6 +189,8 @@
 					successes = 0;
 					markers.clearLayers();
 
+					$("#failure_list").text("");	
+
 					var failure_button = document.getElementById('failure_button');
 					failure_button.removeAttribute('disabled');
 
@@ -271,8 +273,10 @@
 						var output_csv = [];
 						var output_geojson = [];
 						for (var i = 0; i < info.data.length; i++) {
-							lat_list.push(coordinate_list[i].latitude);
-							lon_list.push(coordinate_list[i].longitude);
+							if (!(coordinate_list[i].latitude === 0 & coordinate_list[i].longitude === 0)) {
+								lat_list.push(coordinate_list[i].latitude);
+								lon_list.push(coordinate_list[i].longitude);								
+							};
 							output_csv[i] = jQuery.extend({}, info.data[i], {
 								'latitude': coordinate_list[i].latitude
 							}, {
@@ -298,15 +302,17 @@
 
 						console.log(output_geojson);
 
-						min_lat = Math.min.apply(Math, lat_list);
-						max_lat = Math.max.apply(Math, lat_list);
-						min_lon = Math.min.apply(Math, lon_list);
-						max_lon = Math.max.apply(Math, lon_list);
+						if (lat_list.length > 0) {
+							min_lat = Math.min.apply(Math, lat_list);
+							max_lat = Math.max.apply(Math, lat_list);
+							min_lon = Math.min.apply(Math, lon_list);
+							max_lon = Math.max.apply(Math, lon_list);
 
-						map.fitBounds([
-							[min_lat, min_lon],
-							[max_lat, max_lon]
-						]);
+							map.fitBounds([
+								[min_lat, min_lon],
+								[max_lat, max_lon]
+							]);							
+						}
 
 						var csv = Papa.unparse(output_csv);
 
