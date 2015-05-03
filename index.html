@@ -99,7 +99,7 @@
 				document.getElementById('geocode_button').addEventListener('click', setupGeocoder, false);
 				document.getElementById('failure_button').addEventListener('click', toggleFailure, false);
 
-
+				//show or hide the geocoding failure list
 			    function toggleFailure() {
 			    	if ($("#failure_list").attr("style") === "display: none;") {
 				        $("#failure_list").attr("style","margin-top:10px; display: block; height:120px; width:100%; border:none; overflow:auto;");
@@ -121,47 +121,64 @@
 				var markers = L.featureGroup();
 				markers.addTo(map);
 
+				//take in uploaded file
 				function handleFileSelect(evt) {
 					var files = evt.target.files;
 					var parsed = Papa.parse(files[0], {
 						header: true,
 						complete: function(results) {
 							info = results;
-							console.log("Uploading file.")
-							console.log(info);
 							var list_button = document.getElementById("list_button");
 							list_button.removeAttribute("disabled");
-							field_index = 0;
+
+							//reset column choice section
+							field_index = 0; 
 							$(".option").remove();
 							$(".additional").remove();
+
+							console.log("Uploading file.")
+							console.log(info);
+							
 							makeList();
 						}
 					});
 				}
 
+				//make the field dropdowns
 				function makeList() {
 					console.log("Making list.");
-					var list_number = document.createAttribute("list_number");
 
+					//check if this is the first dropdown or another, and set things up accordingly
+					var list_number = document.createAttribute("list_number");
 					if (field_index === 0) {
 						field_list = document.getElementById('field_list');
-						field_list.removeAttribute("disabled");						
+						field_list.removeAttribute("disabled");
 						field_list.setAttribute("list_number",field_index);
 					} else {
+						//create div for 'additional' dropdown
 						var list_div = document.createElement('div');
 						list_div.setAttribute("class", "additional");
+
+						//create dropdown select
 						field_list = document.createElement('select');
 						field_list.setAttribute("class","field_list");
+						field_list.setAttribute("list_number",field_index);
+
+						//put option placeholder 'and this column' to await selection
 						var list_placeholder = document.createElement('option');
 						list_placeholder.selected = "selected";
 						list_placeholder.textContent = "And This Column";
-						field_list.setAttribute("list_number",field_index);
-						field_list.appendChild(list_placeholder);
+
+						//container
 						var column_select = document.getElementById("column_select");
+
+						//put it all together
+						field_list.appendChild(list_placeholder);
 						column_select.appendChild(list_div);
 						list_div.appendChild(field_list);
 					}
 
+					//create options for dropdown, from the uploaded file
 					for (var i = 0; i < info.meta.fields.length; i++) {
 						var field_option = new Option();
 						field_option.setAttribute("class", "option");
@@ -170,10 +187,11 @@
 						field_list.options.add(field_option);
 					}
 
+					//increment number of dropdowns
 					field_index++;
-
 				}
 
+				//enable or disable run geocoder button
 				function toggleGeocoder() {
 					var geocode_button = document.getElementById('geocode_button');
 					var selected = document.getElementById('field_list').selectedOptions[0].text;
@@ -189,14 +207,17 @@
 					successes = 0;
 					markers.clearLayers();
 
+					//reset list of failures upon geocoder re-run
 					$("#failure_list").text("");	
 
+					//enable view failure button
 					var failure_button = document.getElementById('failure_button');
 					failure_button.removeAttribute('disabled');
 
 					var selected_fields = [];
 					var field_lists = document.getElementsByClassName('field_list');
 
+					//determine which options have been selected across all dropdowns
 					[].forEach.call(field_lists, function (list) {
 						var selected_field = list.selectedOptions[0].text;
 						if (selected_field !== 'And This Column') {
@@ -207,6 +228,7 @@
 					iterateRows(selected_fields);
 				}
 
+				//geocode each row
 				function iterateRows(s) {
 					var index = -1;
 					var begin = setInterval(function() {
@@ -219,14 +241,17 @@
 					}, 1000);
 				}
 
+				//geocode!
 				function geocodeRow(i, s) {
 
+					//combine selected options to create full address string
 					var address = [];
 					[].forEach.call(s, function (x) {
 						address.push(info.data[i][x]);
 					});
 					address = address.join(" ");
 
+					//get geocoordinates from the googleverse
 					geocoder.geocode({
 						'address': address
 					}, function(gmap, status) {
@@ -243,15 +268,18 @@
 							'longitude': lon,
 							'address': address
 						};
-						if (lat === 0 & lon === 0) {
+
+						if (lat === 0 & lon === 0) { //add failures to fail box
 							failures++;
 							$("#failure_list").append("Row " + i +": " + address + "<br>");
-						} else {
+						} else { //add successes to map
 							successes++;
 							var marker = L.marker([address_info.latitude, address_info.longitude]);
 							marker.bindPopup(address_info.address);
 							markers.addLayer(marker);
 						}
+
+						//keep track of geocoding progress
 						var progress = document.getElementById('progress');
 						progress.textContent = successes + " of " + info.data.length + " geocoded and " + failures + " failures";
 
@@ -259,6 +287,7 @@
 					});
 				}
 
+				//gather results and format them for file (csv and geojson) output
 				function collectPoints(a) {
 					console.log(a);
 					if (a.index === 0) {
