@@ -57,9 +57,9 @@
 
 						<p>For best results, the address columns should include the location's full address: street, city, state/country, in that order. The map can help you figure out if anything went awry. Failed geolocation requests can be seen by clicking View Failures. In the output file, these rows will be assigned latitude and longitude values of 0.</p>
 
-						<p>Geocoding is done <a href="https://developers.google.com/maps/articles/geocodestrat#client" target="_blank">client-side</a>, courtesy of the Google Maps API. This enforces a limit of 2,500 requests per day and 5 per second, both per IP address. Because the API does not allow for batch geocoding, requests must be sent address by address. In other words, each geocoded row of the uploaded CSV counts toward those limits.</p>
+						<p>Geocoding is done <a href="https://developers.google.com/maps/articles/geocodestrat#client" target="_blank">client-side</a>, courtesy of the Google Maps API. This enforces a limit of 2,500 requests per day, both per IP address. Because the API does not allow for batch geocoding, requests must be sent address by address. In other words, each geocoded row of the uploaded CSV counts toward those limits.</p>
 
-						<p>In light of these constraints and because downloading is only permitted once all rows have been processed, I would advise against using the site for CSVs with more than a few hundred rows. For most occasional uses, however, it should do the trick.</p>
+						<p>In light of these constraints and because downloading is only permitted once all rows have been processed, I would advise against using the site for CSVs with more than a couple hundred rows. For most occasional uses, however, it should do the trick.</p>
 
 				</div>
 

@@ -232,19 +232,20 @@
 				//geocode each row
 				function iterateRows(s) {
 					var index = -1;
+					var trial = 0
 					var begin = setInterval(function() {
 						console.log(Date.now());
 						index++;
 						if (index < info.data.length) {
-							geocodeRow(index, s);
+							geocodeRow(index, s, trial);
 						} else {
 							clearInterval(begin);
 						}
-					}, 1000);
+					}, 100);
 				}
 
 				//geocode!
-				function geocodeRow(i, s) {
+				function geocodeRow(i, s, t) {
 
 					//combine selected options to create full address string
 					var address = [];
@@ -272,8 +273,13 @@
 						};
 
 						if (lat === 0 & lon === 0) { //add failures to fail box
-							failures++;
-							$("#failure_list").append("Row " + i +": " + address + "<br>");
+							if (t === 0) {
+								console.log("RETRYING");
+								geocodeRow(i, s, t);
+							} else {
+								failures++;
+								$("#failure_list").append("Row " + i +": " + address + "<br>");						
+							}
 						} else { //add successes to map
 							successes++;
 							var marker = L.marker([address_info.latitude, address_info.longitude]);
