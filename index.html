@@ -68,6 +68,7 @@
 					<span id="progress"></span><br>
 					<button id="failure_button" type="submit" disabled="disabled">View Failures</button>
 					<div id="failure_list" style="display: none;"></div>
+					<div style="font:11px/normal 'Lucida Grande'; padding-top:10px">Note: If you upload a larger CSV (over 150 rows), you might run into Google rate limiting. A fix is coming soon!</div>
 				</div>
 				<div id="download_result" class="steps">
 					4. Download the result:<br>
@@ -92,6 +93,8 @@
 				var failures = 0;
 				var successes = 0;
 				var geocoder = new google.maps.Geocoder();
+			    var delay = 1000;
+
 
 				//listen for data upload. right now only csv/tsv type files. also presumes that file contains headers.
 				document.getElementById('files').addEventListener('change', handleFileSelect, false);
@@ -232,20 +235,39 @@
 				//geocode each row
 				function iterateRows(s) {
 					var index = -1;
-					var trial = 0
-					var begin = setInterval(function() {
-						console.log(Date.now());
+
+					function setCounter(i) {
+						if (i % 50 === 0 & i!==0) {
+							console.log("SUPER LONG");
+							return 5000;
+						} else if (i % 25 === 0 & i!==0) {
+							console.log("LONG");
+							return 3000;
+						} else if (i % 10 === 0 & i!==0) {
+							console.log("MEDIUM");
+							return 2000;
+						} else {
+							console.log("SHORT");
+							return 1000;
+						}
+					}
+					var begin = function() {
+						clearInterval(interval);
 						index++;
 						if (index < info.data.length) {
-							geocodeRow(index, s, trial);
-						} else {
-							clearInterval(begin);
+							var response = geocodeRow(index, s);
+							counter = 1000;
+							//setCounter(index);
+							console.log(index);
+							console.log(counter);
+							interval = setInterval(begin, 1000);							
 						}
-					}, 100);
+					}
+					var interval = setInterval(begin, 1000);
 				}
 
 				//geocode!
-				function geocodeRow(i, s, t) {
+				function geocodeRow(i, s) {
 
 					//combine selected options to create full address string
 					var address = [];
@@ -262,6 +284,7 @@
 							lat = gmap[0].geometry.location['A'];
 							lon = gmap[0].geometry.location['F'];
 						} else {
+							console.log(status);
 							lat = 0;
 							lon = 0;
 						}
@@ -273,13 +296,8 @@
 						};
 
 						if (lat === 0 & lon === 0) { //add failures to fail box
-							if (t === 0) {
-								console.log("RETRYING");
-								geocodeRow(i, s, t);
-							} else {
-								failures++;
-								$("#failure_list").append("Row " + i +": " + address + "<br>");						
-							}
+							failures++;
+							$("#failure_list").append("Row " + i +": " + address + "<br>");
 						} else { //add successes to map
 							successes++;
 							var marker = L.marker([address_info.latitude, address_info.longitude]);
@@ -294,6 +312,48 @@
 						collectPoints(address_info);
 					});
 				}
+
+
+
+      // function getAddress(search, next) {
+      //   geo.geocode({address:search}, function (results,status)
+      //     { 
+      //       // If that was successful
+      //       if (status == google.maps.GeocoderStatus.OK) {
+      //         // Lets assume that the first marker is the one we want
+      //         var p = results[0].geometry.location;
+      //         var lat=p.lat();
+      //         var lng=p.lng();
+      //         console.log([lat,lng]);
+      //       }
+      //       // ====== Decode the error status ======
+      //       else {
+      //         // === if we were sending the requests to fast, try this one again and increase the delay
+      //         if (status == google.maps.GeocoderStatus.OVER_QUERY_LIMIT) {
+      //           nextAddress--;
+      //           delay++;
+      //         } else {
+      //           var reason="Code "+status;
+      //           var msg = 'address="' + search + '" error=' +reason+ '(delay='+delay+'ms)<br>';
+      //           console.log(msg);
+      //         }   
+      //       }
+      //       next();
+      //     }
+      //   );
+      // }
+
+      // function theNext() {
+      //   if (nextAddress < addresses.length) {
+      //     setTimeout('getAddress("'+addresses[nextAddress]+'",theNext)', delay);
+      //     nextAddress++;
+      //   } else {
+      //     // We're done. Show map bounds
+      //     console.log("done");
+      //     // map.fitBounds(bounds);
+      //   }
+      // }
+
 
 				//gather results and format them for file (csv and geojson) output
 				function collectPoints(a) {
