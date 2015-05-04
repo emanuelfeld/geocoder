@@ -233,13 +233,14 @@
 				function iterateRows(s) {
 					var index = -1;
 					var begin = setInterval(function() {
+						console.log(Date.now());
 						index++;
 						if (index < info.data.length) {
 							geocodeRow(index, s);
 						} else {
 							clearInterval(begin);
 						}
-					}, 750);
+					}, 1000);
 				}
 
 				//geocode!
