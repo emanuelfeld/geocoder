@@ -1,7 +1,7 @@
 {
     "conformsTo": "http://codefordc.org/resources/specification.html",
     "status": "Production",
-    "thumbnailUrl": "",
+    "thumbnailUrl": "https://raw.githubusercontent.com/emanuelfeld/geocoder/gh-pages/assets/geocoder_box.png",
     "contact": {
         "name": "CSV Geocoder",
         "email": "",
