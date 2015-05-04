@@ -325,6 +325,7 @@
 
 						output_geojson = {
 							'type': 'FeatureCollection',
+							'crs': {'type': 'EPSG', 'properties': {'code': 4326}},
 							'features': output_geojson
 						};
 						output_geojson = JSON.stringify(output_geojson, null, '\t');
