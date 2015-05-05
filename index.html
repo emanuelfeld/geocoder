@@ -94,6 +94,7 @@
 				var successes = 0;
 				var geocoder = new google.maps.Geocoder();
 			    var delay = 1000;
+				var addresses = [];
 
 
 				//listen for data upload. right now only csv/tsv type files. also presumes that file contains headers.
@@ -229,33 +230,51 @@
 						}
 					});
 
-					iterateRows(selected_fields);
+					gatherAddresses(selected_fields);
 				}
 
+				function gatherAddresses(s) {
+					addresses = [];
+
+					for (var i=0; i < info.data.length; i++) {
+						//combine selected options to create full address string
+						var address = [];
+						[].forEach.call(s, function (x) {
+							address.push(info.data[i][x]);
+						});
+						address = address.join(" ");						
+						addresses.push(address);
+					}
+
+					iterateRows();
+				}
+
+
 				//geocode each row
-				function iterateRows(s) {
+				function iterateRows() {
 					var index = -1;
 
-					function setCounter(i) {
-						if (i % 50 === 0 & i!==0) {
-							console.log("SUPER LONG");
-							return 5000;
-						} else if (i % 25 === 0 & i!==0) {
-							console.log("LONG");
-							return 3000;
-						} else if (i % 10 === 0 & i!==0) {
-							console.log("MEDIUM");
-							return 2000;
-						} else {
-							console.log("SHORT");
-							return 1000;
-						}
-					}
+					// function setCounter(i) {
+					// 	if (i % 50 === 0 & i!==0) {
+					// 		console.log("SUPER LONG");
+					// 		return 5000;
+					// 	} else if (i % 25 === 0 & i!==0) {
+					// 		console.log("LONG");
+					// 		return 3000;
+					// 	} else if (i % 10 === 0 & i!==0) {
+					// 		console.log("MEDIUM");
+					// 		return 2000;
+					// 	} else {
+					// 		console.log("SHORT");
+					// 		return 1000;
+					// 	}
+					// }
+
 					var begin = function() {
 						clearInterval(interval);
 						index++;
 						if (index < info.data.length) {
-							var response = geocodeRow(index, s);
+							var response = geocodeRow(index);
 							counter = 1000;
 							//setCounter(index);
 							console.log(index);
@@ -267,18 +286,11 @@
 				}
 
 				//geocode!
-				function geocodeRow(i, s) {
-
-					//combine selected options to create full address string
-					var address = [];
-					[].forEach.call(s, function (x) {
-						address.push(info.data[i][x]);
-					});
-					address = address.join(" ");
+				function geocodeRow(i) {
 
 					//get geocoordinates from the googleverse
 					geocoder.geocode({
-						'address': address
+						'address': addresses[i]
 					}, function(gmap, status) {
 						if (status === google.maps.GeocoderStatus.OK) {
 							lat = gmap[0].geometry.location['A'];
@@ -292,12 +304,12 @@
 							'index': i,
 							'latitude': lat,
 							'longitude': lon,
-							'address': address
+							'address': addresses[i]
 						};
 
 						if (lat === 0 & lon === 0) { //add failures to fail box
 							failures++;
-							$("#failure_list").append("Row " + i +": " + address + "<br>");
+							$("#failure_list").append("Row " + i +": " + addresses[i] + "<br>");
 						} else { //add successes to map
 							successes++;
 							var marker = L.marker([address_info.latitude, address_info.longitude]);
