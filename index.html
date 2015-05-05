@@ -68,7 +68,7 @@
 					<span id="progress"></span><br>
 					<button id="failure_button" type="submit" disabled="disabled">View Failures</button>
 					<div id="failure_list" style="display: none;"></div>
-					<div style="font:11px/normal 'Lucida Grande'; padding-top:10px">Note: If you upload a larger CSV (over 150 rows), you might get failures due to Google rate limiting. A fix is coming soon, which should speed things up!</div>
+					<div style="font:11px/normal 'Lucida Grande'; padding-top:10px">Note: You might notice a slowdown in the rate of geocoding when you upload a larger file (i.e. over 150 rows), due to limits enforced by the Google API.</div>
 				</div>
 				<div id="download_result" class="steps">
 					4. Download the result:<br>
@@ -253,7 +253,7 @@
 
 				//geocode each row
 				function iterateRows() {
-					
+
 					var begin = function() {
 						clearInterval(interval);
 						if (index < info.data.length) {
