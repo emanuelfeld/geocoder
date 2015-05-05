@@ -93,8 +93,9 @@
 				var failures = 0;
 				var successes = 0;
 				var geocoder = new google.maps.Geocoder();
-			    var delay = 1000;
+			    var delay = 300;
 				var addresses = [];
+				var index = 0;
 
 
 				//listen for data upload. right now only csv/tsv type files. also presumes that file contains headers.
@@ -252,61 +253,50 @@
 
 				//geocode each row
 				function iterateRows() {
-					var index = -1;
-
-					// function setCounter(i) {
-					// 	if (i % 50 === 0 & i!==0) {
-					// 		console.log("SUPER LONG");
-					// 		return 5000;
-					// 	} else if (i % 25 === 0 & i!==0) {
-					// 		console.log("LONG");
-					// 		return 3000;
-					// 	} else if (i % 10 === 0 & i!==0) {
-					// 		console.log("MEDIUM");
-					// 		return 2000;
-					// 	} else {
-					// 		console.log("SHORT");
-					// 		return 1000;
-					// 	}
-					// }
-
+					
 					var begin = function() {
 						clearInterval(interval);
-						index++;
 						if (index < info.data.length) {
-							var response = geocodeRow(index);
-							counter = 1000;
-							//setCounter(index);
+							console.log(Date.now());
 							console.log(index);
-							console.log(counter);
-							interval = setInterval(begin, 1000);							
+							console.log(addresses[index]);							
+							geocodeRow(index);
+							interval = setInterval(begin, delay);
 						}
 					}
-					var interval = setInterval(begin, 1000);
+					var interval = setInterval(begin, delay);
 				}
 
-				//geocode!
+
 				function geocodeRow(i) {
 
 					//get geocoordinates from the googleverse
 					geocoder.geocode({
 						'address': addresses[i]
 					}, function(gmap, status) {
+						console.log(status);
 						if (status === google.maps.GeocoderStatus.OK) {
 							lat = gmap[0].geometry.location['A'];
 							lon = gmap[0].geometry.location['F'];
+							index++;
+							console.log("Status: OK; Address: " + addresses[i] + "; Latitude: " + lat + ", Longitude: " + lon + "; Delay: " + delay);
+						} else if (status === google.maps.GeocoderStatus.OVER_QUERY_LIMIT) {
+							delay+=50;
+							console.log("Status: OVER; Address: " + addresses[i] + "; Delay: " + delay);
 						} else {
-							console.log(status);
 							lat = 0;
 							lon = 0;
+							index++;
+							console.log("Status: NOT LOCATED; Address: " + addresses[i] + "; Latitude: " + lat + ", Longitude: " + lon + "; Delay: " + delay);
 						}
-						var address_info = {
-							'index': i,
-							'latitude': lat,
-							'longitude': lon,
-							'address': addresses[i]
-						};
 
+						if (status !== google.maps.GeocoderStatus.OVER_QUERY_LIMIT) {
+							var address_info = {
+								'index': i,
+								'latitude': lat,
+								'longitude': lon,
+								'address': addresses[i]
+							};
 						if (lat === 0 & lon === 0) { //add failures to fail box
 							failures++;
 							$("#failure_list").append("Row " + i +": " + addresses[i] + "<br>");
@@ -316,56 +306,14 @@
 							marker.bindPopup(address_info.address);
 							markers.addLayer(marker);
 						}
-
-						//keep track of geocoding progress
 						var progress = document.getElementById('progress');
 						progress.textContent = successes + " of " + info.data.length + " geocoded and " + failures + " failures";
 
 						collectPoints(address_info);
+
+						}
 					});
 				}
-
-
-
-      // function getAddress(search, next) {
-      //   geo.geocode({address:search}, function (results,status)
-      //     { 
-      //       // If that was successful
-      //       if (status == google.maps.GeocoderStatus.OK) {
-      //         // Lets assume that the first marker is the one we want
-      //         var p = results[0].geometry.location;
-      //         var lat=p.lat();
-      //         var lng=p.lng();
-      //         console.log([lat,lng]);
-      //       }
-      //       // ====== Decode the error status ======
-      //       else {
-      //         // === if we were sending the requests to fast, try this one again and increase the delay
-      //         if (status == google.maps.GeocoderStatus.OVER_QUERY_LIMIT) {
-      //           nextAddress--;
-      //           delay++;
-      //         } else {
-      //           var reason="Code "+status;
-      //           var msg = 'address="' + search + '" error=' +reason+ '(delay='+delay+'ms)<br>';
-      //           console.log(msg);
-      //         }   
-      //       }
-      //       next();
-      //     }
-      //   );
-      // }
-
-      // function theNext() {
-      //   if (nextAddress < addresses.length) {
-      //     setTimeout('getAddress("'+addresses[nextAddress]+'",theNext)', delay);
-      //     nextAddress++;
-      //   } else {
-      //     // We're done. Show map bounds
-      //     console.log("done");
-      //     // map.fitBounds(bounds);
-      //   }
-      // }
-
 
 				//gather results and format them for file (csv and geojson) output
 				function collectPoints(a) {
