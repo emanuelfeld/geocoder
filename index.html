@@ -273,13 +273,8 @@
 					index = 0;
 
 					var begin = function() {
-						console.log("HELLO");
-						console.log(index);
 						clearInterval(interval);
 						if (index < info.data.length) {
-							console.log(Date.now());
-							console.log(index);
-							console.log(addresses[index]);							
 							geocodeRow(index);
 							interval = setInterval(begin, delay);
 						}
@@ -294,7 +289,6 @@
 					geocoder.geocode({
 						'address': addresses[i]
 					}, function(gmap, status) {
-						console.log(status);
 						if (status === google.maps.GeocoderStatus.OK) {
 							lat = gmap[0].geometry.location['A'];
 							lon = gmap[0].geometry.location['F'];
@@ -337,7 +331,6 @@
 
 				//gather results and format them for file (csv and geojson) output
 				function collectPoints(a) {
-					console.log(a);
 					if (a.index === 0) {
 						coordinate_list = [];
 					}
