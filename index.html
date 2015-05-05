@@ -137,6 +137,14 @@
 							var list_button = document.getElementById("list_button");
 							list_button.removeAttribute("disabled");
 
+							coordinates = [];
+							field_index = 0;
+							failures = 0;
+							successes = 0;
+						    delay = 300;
+							addresses = [];
+							index = 0;
+
 							//reset column choice section
 							field_index = 0; 
 							$(".option").remove();
@@ -153,6 +161,13 @@
 				//make the field dropdowns
 				function makeList() {
 					console.log("Making list.");
+
+					coordinates = [];
+					failures = 0;
+					successes = 0;
+				    delay = 300;
+					addresses = [];
+					index = 0;
 
 					//check if this is the first dropdown or another, and set things up accordingly
 					var list_number = document.createAttribute("list_number");
@@ -215,6 +230,7 @@
 
 					//reset list of failures upon geocoder re-run
 					$("#failure_list").text("");	
+					$("#progress").text("");
 
 					//enable view failure button
 					var failure_button = document.getElementById('failure_button');
@@ -254,7 +270,11 @@
 				//geocode each row
 				function iterateRows() {
 
+					index = 0;
+
 					var begin = function() {
+						console.log("HELLO");
+						console.log(index);
 						clearInterval(interval);
 						if (index < info.data.length) {
 							console.log(Date.now());
