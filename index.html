@@ -74,6 +74,11 @@
 					<button id="download" type="submit" disabled="disabled">CSV</button><br>
 					<button id="geojson" type="submit" disabled="disabled">GeoJSON</button>
 				</div>
+				<div id="save_gist" class="steps">
+					5. Save map:<br>
+					<button id="gist_button" type="submit" disabled="disabled">Create Gist</button><br>
+					<div style="font:11px/normal 'Lucida Grande'; padding-top:10px"><a id="gist_result" href="" target="_blank"></a></div>
+				</div>
 			</div>
 
 			<div id="map"></div>
@@ -83,6 +88,8 @@
 
 
 			function main() {
+
+				// postGist();
 
 				var coordinates = [];
 				var lat, lon;
@@ -94,6 +101,7 @@
 				var geocoder = new google.maps.Geocoder();
 			    var delay = 300;
 				var addresses = [];
+				var output_geojson = [];
 				var index = 0;
 
 
@@ -103,6 +111,7 @@
 				document.getElementById('list_button').addEventListener('click', makeList, false);
 				document.getElementById('geocode_button').addEventListener('click', setupGeocoder, false);
 				document.getElementById('failure_button').addEventListener('click', toggleFailure, false);
+				document.getElementById('gist_button').addEventListener('click', postGist, false);
 
 				//show or hide the geocoding failure list
 			    function toggleFailure() {
@@ -340,7 +349,7 @@
 						var lat_list = [];
 						var lon_list = [];
 						var output_csv = [];
-						var output_geojson = [];
+						output_geojson = [];
 						for (var i = 0; i < info.data.length; i++) {
 							if (!(coordinate_list[i].latitude === 0 & coordinate_list[i].longitude === 0)) {
 								lat_list.push(coordinate_list[i].latitude);
@@ -360,12 +369,12 @@
 									'coordinates': [coordinate_list[i].longitude, coordinate_list[i].latitude]
 								}
 							});
-
 						}
+
+							// 'crs': {'type': 'EPSG', 'properties': {'code': 4326}},
 
 						output_geojson = {
 							'type': 'FeatureCollection',
-							'crs': {'type': 'EPSG', 'properties': {'code': 4326}},
 							'features': output_geojson
 						};
 						output_geojson = JSON.stringify(output_geojson, null, '\t');
@@ -408,7 +417,37 @@
 						download_link.target = '_blank';
 						download_link.download = 'geocoded.csv';
 						download.appendChild(download_link);
+
+						var gist_button = document.getElementById("gist_button");
+						gist_button.removeAttribute("disabled");
+
 					}
+				}
+
+				function postGist() {
+
+					var description = "Map from geocode on " + Date.now();
+					var filename = "map" + Date.now() + ".json";
+
+					var data = {
+					  "description": description,
+					  "public": true,
+					  "files": {
+					    "map.json": {
+					      "content": output_geojson
+					    }
+					  }
+					}
+
+				  $.post('https://api.github.com/gists', JSON.stringify(data), function(d) {
+
+				  	var gist_result = document.getElementById("gist_result");
+				  	console.log(d.html_url);
+				  	gist_result.setAttribute("href", d.html_url);
+				  	gist_result.textContent = "Map now accessible here";
+				  	console.log(d);
+				  });
+
 				}
 
 			}
