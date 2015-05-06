@@ -298,8 +298,8 @@
 						'address': addresses[i]
 					}, function(gmap, status) {
 						if (status === google.maps.GeocoderStatus.OK) {
-							lat = gmap[0].geometry.location['A'];
-							lon = gmap[0].geometry.location['F'];
+							lat = gmap[0].geometry.location.lat();
+							lon = gmap[0].geometry.location.lng();
 							index++;
 							console.log("Status: OK; Address: " + addresses[i] + "; Latitude: " + lat + ", Longitude: " + lon + "; Delay: " + delay);
 						} else if (status === google.maps.GeocoderStatus.OVER_QUERY_LIMIT) {
@@ -339,6 +339,7 @@
 
 				//gather results and format them for file (csv and geojson) output
 				function collectPoints(a) {
+					console.log(a);
 					if (a.index === 0) {
 						coordinate_list = [];
 					}
