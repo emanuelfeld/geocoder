@@ -75,7 +75,7 @@
 					<button id="geojson" type="submit" disabled="disabled">GeoJSON</button>
 				</div>
 				<div id="save_gist" class="steps">
-					5. Save map:<br>
+					5. Save the map:<br>
 					<button id="gist_button" type="submit" disabled="disabled">Create Gist</button><br>
 					<div style="font:11px/normal 'Lucida Grande'; padding-top:10px"><a id="gist_result" href="" target="_blank"></a></div>
 				</div>
@@ -103,6 +103,7 @@
 				var addresses = [];
 				var output_geojson = [];
 				var index = 0;
+				var markers = []
 
 
 				//listen for data upload. right now only csv/tsv type files. also presumes that file contains headers.
@@ -124,16 +125,54 @@
 			    	}
 			    }
 
-				//initialize map
-				var map = L.map('map').setView([51.505, -0.09], 2);
-				L.tileLayer('http://{s}.tiles.mapbox.com/v3/evonfriedland.m2bo5h3j/{z}/{x}/{y}.png', {
-					attribution: 'Map data &copy; <a href="http://openstreetmap.org">OpenStreetMap</a> contributors, <a href="http://creativecommons.org/licenses/by-sa/2.0/">CC-BY-SA</a>, Imagery © <a href="http://mapbox.com">Mapbox</a>',
-					maxZoom: 18
-				}).addTo(map);
+				var map;
 
-				//set up feature group to gather markers
-				var markers = L.featureGroup();
-				markers.addTo(map);
+				function initialize() {
+				  var mapOptions = {
+				    zoom: 2,
+				    maxZoom: 18,
+				    center: new google.maps.LatLng(51.505, -0.09)
+				  };
+				  map = new google.maps.Map(document.getElementById('map'),
+				      mapOptions);
+				}
+
+				function addMarker(location) {
+				  var marker = new google.maps.Marker({
+				    position: location,
+				    map: map
+				  });
+				  markers.push(marker);
+				}
+
+				// Sets the map on all markers in the array.
+				function setAllMap(map) {
+				  for (var i = 0; i < markers.length; i++) {
+				    markers[i].setMap(map);
+				  }
+				}
+
+				function clearMarkers() {
+				  setAllMap(null);
+				}
+
+				function deleteMarkers() {
+				  clearMarkers();
+				  markers = [];
+				}
+
+				initialize();
+
+				// //initialize map
+				// var map = L.map('map').setView([51.505, -0.09], 2);
+				// L.tileLayer('http://{s}.tiles.mapbox.com/v3/evonfriedland.m2bo5h3j/{z}/{x}/{y}.png', {
+				// 	attribution: 'Map data &copy; <a href="http://openstreetmap.org">OpenStreetMap</a> contributors, <a href="http://creativecommons.org/licenses/by-sa/2.0/">CC-BY-SA</a>, Imagery © <a href="http://mapbox.com">Mapbox</a>',
+				// 	maxZoom: 18
+				// }).addTo(map);
+
+				// //set up feature group to gather markers
+				// var markers = L.featureGroup();
+				// markers.addTo(map);
 
 				//take in uploaded file
 				function handleFileSelect(evt) {
@@ -234,7 +273,8 @@
 				function setupGeocoder() {
 					failures = 0;
 					successes = 0;
-					markers.clearLayers();
+					// markers.clearLayers();
+					deleteMarkers();
 
 					//reset list of failures upon geocoder re-run
 					$("#failure_list").text("");	
@@ -290,7 +330,6 @@
 					var interval = setInterval(begin, delay);
 				}
 
-
 				function geocodeRow(i) {
 
 					//get geocoordinates from the googleverse
@@ -324,9 +363,11 @@
 							$("#failure_list").append("Row " + i +": " + addresses[i] + "<br>");
 						} else { //add successes to map
 							successes++;
-							var marker = L.marker([address_info.latitude, address_info.longitude]);
-							marker.bindPopup(address_info.address);
-							markers.addLayer(marker);
+							var location = new google.maps.LatLng(address_info.latitude, address_info.longitude);
+							addMarker(location);
+							// var marker = L.marker([address_info.latitude, address_info.longitude]);
+							// marker.bindPopup(address_info.address);
+							// markers.addLayer(marker);
 						}
 						var progress = document.getElementById('progress');
 						progress.textContent = successes + " of " + info.data.length + " geocoded and " + failures + " failures";
@@ -388,10 +429,16 @@
 							min_lon = Math.min.apply(Math, lon_list);
 							max_lon = Math.max.apply(Math, lon_list);
 
-							map.fitBounds([
-								[min_lat, min_lon],
-								[max_lat, max_lon]
-							]);							
+							var bounds = new google.maps.LatLngBounds();
+							var min_bounds = new google.maps.LatLng(min_lat,min_lon);
+							var max_bounds = new google.maps.LatLng(max_lat,max_lon);
+							bounds.extend(min_bounds);
+							bounds.extend(max_bounds);
+							map.fitBounds(bounds);
+							// map.fitBounds([
+							// 	[min_lat, min_lon],
+							// 	[max_lat, max_lon]
+							// ]);							
 						}
 
 						var csv = Papa.unparse(output_csv);
