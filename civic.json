@@ -1,0 +1,24 @@
+{
+    "conformsTo": "http://codefordc.org/resources/specification.html",
+    "status": "Production",
+    "thumbnailUrl": "https://raw.githubusercontent.com/emanuelfeld/geocoder/gh-pages/assets/geocoder_box.png",
+    "contact": {
+        "name": "CSV Geocoder",
+        "email": "",
+        "twitter": "@evonfriedland"
+    },
+    "bornAt": "",
+    "geography": "Global",
+    "politicalEntity": {},
+    "governmentPartner": {},
+    "communityPartner": {},
+    "type": "Web App",
+    "data": {},
+    "needs": [],
+    "categories": [
+        {"category":"Geocoding"},
+        {"category":"Geospatial"},
+        {"category":"Maps"}
+    ],
+    "moreInfo": "https://emanuelfeld.github.io/geocoder"
+}

@@ -1,0 +1,91 @@
+<!doctype html>
+<html>
+	<head>
+		<meta charset="utf-8">
+		<meta http-equiv="X-UA-Compatible" content="chrome=1">
+		<meta property="og:title" content="geocoder" />
+		<meta property="og:site_name" content="geocoder" />
+		<meta property="og:description" content="Simple CSV geocoding interface." />
+		<meta property="og:type" content="website" />
+		<meta property="og:url" content="https://emanuelfeld.github.io/geocoder" />
+		<meta property="og:image" content="https://emanuelfeld.github.io/geocoder/assets/geocoder_box.png" />
+		
+		<title>geocoder</title>
+		
+		<link rel="stylesheet" href="stylesheets/about.css">
+		<link rel="stylesheet" href="stylesheets/pygment_trac.css">
+		<link rel="shortcut icon" type="image/x-icon" href="assets/geocoder_box.ico" >
+		<link href='https://fonts.googleapis.com/css?family=Dosis|Abel|Titillium+Web|Roboto+Condensed' rel='stylesheet' type='text/css'>
+
+		<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/leaflet/0.7.3/leaflet.css" />
+		<script src="https://cdnjs.cloudflare.com/ajax/libs/leaflet/0.7.3/leaflet.js"></script>
+
+		<meta content="initial-scale=1.0, user-scalable=no" name="viewport">
+		<!--[if lt IE 9]>
+		<script src="//html5shiv.googlecode.com/svn/trunk/html5.js"></script>
+		<![endif]-->
+		<!-- Go to www.addthis.com/dashboard to customize your tools -->
+		<script src="javascripts/papaparse.min.js"></script>
+		<script src="javascripts/jquery.min.js"></script>
+		<script src="https://maps.googleapis.com/maps/api/js?v=3.exp&signed_in=true"></script>
+		<script type="text/javascript" src="//s7.addthis.com/js/300/addthis_widget.js#pubid=ra-5542e6df2a2e5aa7" async="async"></script>
+		<script>
+		(function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
+		(i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
+		m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
+		})(window,document,'script','//www.google-analytics.com/analytics.js','ga');
+		
+		ga('create', 'UA-61502361-1', 'auto');
+		ga('send', 'pageview');
+		</script>
+	</head>
+	
+	<body style="margin:0 auto">
+
+		<header>
+			<div id="logo"><a href="/geocoder"><img alt="dctrees_logo" src="assets/geocoder_box.png"></a></div>
+		</header>
+
+			<section>
+
+				<div id="about">
+					<h2><a class="anchor" href="#about" id="about"><span class="octicon octicon-link"></span></a>About</h2>
+
+						<p>A simple web interface for geocoding addresses in a delimited text file (e.g. CSV or TSV). Just upload your file, select the address column(s), and run the geocoder. Don't have a CSV handy, but want to try it out? Here, use <a href="https://raw.githubusercontent.com/emanuelfeld/geocoder/gh-pages/assets/geocoder_test.csv" target="_blank" download="geocoder_test.csv">this one</a>.</p>
+
+						<p>Each successfully geocoded point gets placed on the map and, once complete, you can download the result as a CSV and/or GeoJSON file (with additional fields giving latitude and longitude in <a href="http://spatialreference.org/ref/epsg/wgs-84/" target="_blank">EPSG:4326</a>).</p> 
+
+						<p>For best results, the address columns should include the location's full address: street, city, state/country, in that order. The map can help you figure out if anything went awry. Failed geolocation requests can be seen by clicking View Failures. In the output file, these rows will be assigned latitude and longitude values of 0.</p>
+
+						<p>Geocoding is done <a href="https://developers.google.com/maps/articles/geocodestrat#client" target="_blank">client-side</a>, courtesy of the Google Maps API. This enforces a limit of 2,500 requests per day, both per IP address. Because the API does not allow for batch geocoding, requests must be sent address by address. In other words, each geocoded row of the uploaded CSV counts toward those limits.</p>
+
+						<p>In light of these constraints and because downloading is only permitted once all rows have been processed, I would advise against using the site for CSVs with more than a couple hundred rows. For most occasional uses, however, it should do the trick.</p>
+
+				</div>
+
+				<div id="contact">
+					<h2><a class="anchor" href="#contact" id="contact"><span class="octicon octicon-link"></span></a>Contact</h2>
+
+					<p>This tool was developed by <a href="https://emanuelfeld.github.io" target="_blank">Emanuel Feld</a>.</p>
+
+					<p>Send questions, issues, ideas, feature requests, rants, or raves on <a href="https://twitter.com/evonfriedland" target="_blank">Twitter</a>
+					or by email at evonfriedland at gmail dot com.</p>
+
+				</div>
+
+			</section>
+
+			<footer class="footer">
+				<p><a href="/geocoder" class="link"> back to geocoding </a></p>
+				<p>
+					<!-- Go to www.addthis.com/dashboard to customize your tools -->
+					<div class="addthis_sharing_toolbox"></div>
+				</p>
+			</footer>	
+
+			<!-- Go to www.addthis.com/dashboard to customize your tools -->
+			<script type="text/javascript" src="//s7.addthis.com/js/300/addthis_widget.js#pubid=ra-553071fc49386392" async="async"></script>
+
+    		<script src="javascripts/scale.fix.js"></script>
+  	</body>
+</html>
