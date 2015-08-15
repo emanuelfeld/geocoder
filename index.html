@@ -2,7 +2,7 @@
 <html>
 	<head>
 		<meta charset="utf-8">
-		<meta http-equiv="X-UA-Compatible" content="chrome=1">
+		<meta http-equiv="X-UA-Compatible" content="IE=edge">
 		<meta property="og:title" content="geocoder" />
 		<meta property="og:site_name" content="geocoder" />
 		<meta property="og:description" content="Simple CSV geocoding interface." />
@@ -23,7 +23,7 @@
 		<!-- Go to www.addthis.com/dashboard to customize your tools -->
 		<script src="javascripts/papaparse.min.js"></script>
 		<script src="javascripts/jquery.min.js"></script>
-		<script src="https://maps.googleapis.com/maps/api/js?v=3.exp&signed_in=true"></script>
+		<script src="https://maps.googleapis.com/maps/api/js?v=3.exp&amp;ampsigned_in=true"></script>
 		<script type="text/javascript" src="//s7.addthis.com/js/300/addthis_widget.js#pubid=ra-5542e6df2a2e5aa7" async="async"></script>
 		<script>
 		(function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
@@ -44,11 +44,11 @@
 			<div id="instructions"> 
 				<div id="title_box">
 					<div id="title" class="steps">Geocoder</div>
-					<div id="subtitle" class="steps"><a href="/geocoder/about">instructions</a> &nbsp <a href="/geocoder/about#contact">contact</a> &nbsp <a href="https://github.com/emanuelfeld/geocoder">code</a></div>
+					<div id="subtitle" class="steps"><a href="/geocoder/about">instructions</a> &nbsp; <a href="/geocoder/about#contact">contact</a> &nbsp; <a href="https://github.com/emanuelfeld/geocoder">code</a></div>
 				</div>
 				<div id="file_select" class="steps">
 					1. Select your file:<br>
-					<input type="file" value="hello" id="files" name="files[]" accept="text/csv,text/tab-separated-values,.txt"/>					
+					<input type="file" id="files" name="files[]" accept="text/csv,text/tab-separated-values,.txt"/>					
 					<div style="font:11px/normal 'Lucida Grande'; padding-top:10px">No CSV handy? Try it out with <a href="https://raw.githubusercontent.com/emanuelfeld/geocoder/gh-pages/assets/geocoder_test.csv" target="_blank" download="geocoder_test.csv">this one</a>.</div>
 				</div>
 				<div id="column_select" class="steps">
