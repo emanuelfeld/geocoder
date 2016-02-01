@@ -1,24 +1,35 @@
 {
-    "conformsTo": "http://codefordc.org/resources/specification.html",
-    "status": "Production",
-    "thumbnailUrl": "https://raw.githubusercontent.com/emanuelfeld/geocoder/gh-pages/assets/geocoder_box.png",
+    "name": "CSV Geocoder", 
+    "description": "Web app interface for geocoding addresses in CSV files.", 
+    "license": "GPL-2.0", 
+    "status": "Production", 
+    "type": "Web App", 
+    "homepage": "https://emanuelfeld.github.io/geocoder", 
+    "repository": "https://github.com/emanuelfeld/geocoder", 
+    "thumbnail": "https://raw.githubusercontent.com/emanuelfeld/geocoder/gh-pages/assets/geocoder_box.png", 
+    "geography": [
+        "Global"
+    ], 
     "contact": {
-        "name": "CSV Geocoder",
-        "email": "",
-        "twitter": "@evonfriedland"
-    },
-    "bornAt": "",
-    "geography": "Global",
-    "politicalEntity": {},
-    "governmentPartner": {},
-    "communityPartner": {},
-    "type": "Web App",
-    "data": {},
-    "needs": [],
-    "categories": [
-        {"category":"Geocoding"},
-        {"category":"Geospatial"},
-        {"category":"Maps"}
-    ],
-    "moreInfo": "https://emanuelfeld.github.io/geocoder"
+        "name": "CSV Geocoder", 
+        "email": "", 
+        "url": "https://twitter.com/@evonfriedland"
+    }, 
+    "partners": [
+        {
+            "url": "http://codefordc.org", 
+            "name": "Code for DC", 
+            "email": ""
+        }
+    ], 
+    "data": [], 
+    "tags": [
+        "Geocoding", 
+        "Geospatial", 
+        "Maps"
+    ], 
+    "links": [
+        "https://emanuelfeld.github.io/geocoder"
+    ], 
+    "id": "https://raw.githubusercontent.com/DCgov/civic.json/master/schemas/schema-v1.json"
 }
