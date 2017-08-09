@@ -8,7 +8,7 @@ Geocoding is done [client-side](https://developers.google.com/maps/articles/geoc
 
 In light of these limits and because downloading is only permitted when all rows have been processed, I would advise against using the site for CSVs with more than a couple hundred rows. For most occasional uses, however, it should do the trick.
 
-##License and Contributing##
+## License and Contributing
 
 This project's code is offered under a GPLv2 license. As stated in [CONTRIBUTING](https://raw.githubusercontent.com/emanuelfeld/tree-map/gh-pages/CONTRIBUTING.md):
 
