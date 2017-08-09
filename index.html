@@ -1,85 +1,90 @@
 <!doctype html>
 <html>
-	<head>
-		<meta charset="utf-8">
-		<meta http-equiv="X-UA-Compatible" content="IE=edge">
-		<meta property="og:title" content="geocoder" />
-		<meta property="og:site_name" content="geocoder" />
-		<meta property="og:description" content="Simple CSV geocoding interface." />
-		<meta property="og:type" content="website" />
-		<meta property="og:url" content="https://emanuelfeld.github.io/geocoder" />
-		<meta property="og:image" content="https://emanuelfeld.github.io/geocoder/assets/geocoder_box.png" />
-		
-		<title>geocoder</title>
-		
-		<link rel="stylesheet" href="stylesheets/index.css">
-		<link rel="shortcut icon" type="image/x-icon" href="assets/geocoder_box.ico" >
-		<link href='https://fonts.googleapis.com/css?family=Dosis|Abel|Titillium+Web|Roboto+Condensed' rel='stylesheet' type='text/css'>
+    <head>
+        <meta charset="utf-8">
+        <meta http-equiv="X-UA-Compatible" content="IE=edge">
 
-		<meta content="initial-scale=1.0, user-scalable=no" name="viewport">
+        <meta property="og:title" content="geocoder" />
+        <meta property="og:site_name" content="geocoder" />
+        <meta property="og:description" content="Simple CSV geocoding interface." />
+        <meta property="og:type" content="website" />
+        <meta property="og:url" content="https://emanuelfeld.github.io/geocoder" />
+        <meta property="og:image" content="https://emanuelfeld.github.io/geocoder/assets/geocoder_box.png" />
+        
+        <title>geocoder</title>
+        
+        <link rel="stylesheet" href="stylesheets/index.css">
+        <link rel="shortcut icon" type="image/x-icon" href="assets/geocoder_box.ico" >
+        <link href="https://fonts.googleapis.com/css?family=Dosis:300,400|Lato" rel="stylesheet">
 
-		<script src="javascripts/papaparse.min.js"></script>
-		<script src="javascripts/jquery.min.js"></script>
-		<script src="https://maps.googleapis.com/maps/api/js?v=3.exp&amp;ampsigned_in=true"></script>
-		<script type="text/javascript" src="//s7.addthis.com/js/300/addthis_widget.js#pubid=ra-5542e6df2a2e5aa7" async="async"></script>
-		<script>
-		(function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
-		(i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
-		m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
-		})(window,document,'script','//www.google-analytics.com/analytics.js','ga');
-		
-		ga('create', 'UA-61502361-1', 'auto');
-		ga('send', 'pageview');
-		</script>
-	</head>
+        <meta content="initial-scale=1.0, user-scalable=no" name="viewport">
 
-	<body style="margin:0 auto">
-		
- <div id="contents">
- 	<div style="display: table-row">
+        <script src="javascripts/papaparse.min.js"></script>
+        <script src="javascripts/jquery.min.js"></script>
+        <script src="https://maps.googleapis.com/maps/api/js?v=3.exp&amp;ampsigned_in=true"></script>
+        <script type="text/javascript" src="//s7.addthis.com/js/300/addthis_widget.js#pubid=ra-5542e6df2a2e5aa7" async="async"></script>
+        <script>
+            (function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
+            (i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
+            m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
+            })(window,document,'script','//www.google-analytics.com/analytics.js','ga');
+            
+            ga('create', 'UA-61502361-1', 'auto');
+            ga('send', 'pageview');
+        </script>
+    </head>
 
-			<div id="instructions"> 
-				<div id="title_box">
-					<div id="title" class="steps">Geocoder</div>
-					<div id="subtitle" class="steps"><a href="/geocoder/about">instructions</a> &nbsp; <a href="/geocoder/about#contact">contact</a> &nbsp; <a href="https://github.com/emanuelfeld/geocoder">code</a></div>
-				</div>
-				<div id="file_select" class="steps">
-					1. Select your file:<br>
-					<input type="file" id="files" name="files[]" accept="text/csv,text/tab-separated-values,.txt"/>					
-					<div style="font:11px/normal 'Lucida Grande'; padding-top:10px">No CSV handy? Try it out with <a href="https://raw.githubusercontent.com/emanuelfeld/geocoder/gh-pages/assets/geocoder_test.csv" target="_blank" download="geocoder_test.csv">this one</a>.</div>
-				</div>
-				<div id="column_select" class="steps">
-					2. Choose address column(s):<br>
-				<select class="field_list" id="field_list" disabled="disabled">
-					<option selected="selected" disabled="disabled">This Column</option>
-				</select>
-				<button id="list_button" type="submit" disabled="disabled">Add Another</button>				
-				</div>
-				<div id="run_geocoder" class="steps">
-					3. Run the geocoder:<br>
-					<button id="geocode_button" type="submit" disabled="disabled">Go!</button>
-					<span id="progress"></span><br>
-					<button id="failure_button" type="submit" disabled="disabled">View Failures</button>
-					<div id="failure_list" style="display: none;"></div>
-				</div>
-				<div id="download_result" class="steps">
-					4. Download the result:<br>
-					<button id="download" type="submit" disabled="disabled">CSV</button><br>
-					<button id="geojson" type="submit" disabled="disabled">GeoJSON</button>
-				</div>
-				<div id="save_gist" class="steps">
-					5. Save the map:<br>
-					<button id="gist_button" type="submit" disabled="disabled">Create Gist</button><br>
-					<div style="font:11px/normal 'Lucida Grande'; padding-top:10px"><a id="gist_result" href="" target="_blank"></a></div>
-				</div>
-			</div>
+    <body style="margin:0 auto">
 
-			<div id="map"></div>
-	</div>
+        <div id="contents">
+            <div style="display: table-row">
+                <div id="sidebar"> 
+                    <div id="titleBox">
+                        <div id="title">Geocoder</div>
+                        <div id="subtitle">
+                            <a href="https://paypal.me/efeld" id="tipJar" target="_blank">donate</a> &nbsp;
+                            <a href="/geocoder/about">instructions</a> &nbsp; 
+                            <a href="/geocoder/about#contact">contact</a>
+                        </div>
+                    </div>
+                    <div id="fileStep">
+                        <h2>1. Select your file:</h2>
+                        <input type="file" value="hello" id="uploadButton" name="files[]" accept="text/csv,text/tab-separated-values,.txt"/>                    
+                        <div class="message" style="padding-top:10px">No CSV handy? Try it out with <a href="/geocoder/assets/geocoder_test.csv" target="_blank" download="geocoder_test.csv">this one</a>.</div>
+                    </div>
+                    <div id="fieldStep">
+                        <h2>2. Choose address column(s):</h2>
+                        <div>
+                            <select class="fieldMenu" id="fieldMenu-0" disabled="disabled">
+                                <option selected="selected" disabled="disabled">This Column</option>
+                            </select>
+                            <button id="addFieldsButton" type="submit" disabled="disabled">Add Another</button>
+                        </div>
+                    </div>
+                    <div id="runStep">
+                        <h2>3. Run the tool:</h2>
+                        <button id="geocodeButton" type="submit" disabled="disabled">Go!</button>
+                        <span id="progress" class="message"></span><br>
+                        <button id="failureButton" type="submit" disabled="disabled">View Failures</button>
+                        <div id="failures" class="message hidden"></div>
+                    </div>
+                    <div id="downloadStep">
+                        <h2>4. Download the result:</h2>
+                        <button id="csvButton" type="submit" disabled="disabled">CSV</button><br>
+                        <button id="geojsonButton" type="submit" disabled="disabled">GeoJSON</button>
+                    </div>
+                    <div id="gistStep">
+                        <h2>5. Save the map:</h2>
+                        <button id="gistButton" type="submit" disabled="disabled">Create Gist</button>
+                        <span class="message" id="gist"><a id="gistResult" href="" target="_blank"></a></span>
+                    </div>
+                </div>
+                <div id="map"></div>
+        </div>
+    </div>
 
-		<script src="javascripts/index.js"></script>
+    <script src="javascripts/index.js"></script>
+    <script src="javascripts/scale.fix.js"></script>
 
-		<script src="javascripts/scale.fix.js"></script>
-
-  	</body>
+    </body>
 </html>

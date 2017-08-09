@@ -1,118 +1,100 @@
-#contents {
-    width:100%;
-    height:100%;
-    display: table;
-}
-
-
-#title_box {
-    background-color: #257625;        
-    padding:10px 90px 10px 0px;
-    margin-bottom:10px;
-}
-
-#title {
-    font:50px Dosis,"Helvetica Neue",Helvetica,Arial,sans-serif;
-    color: white;
-}
-
-#subtitle {
-    font:20px Dosis,"Helvetica Neue",Helvetica,Arial,sans-serif;
-    color: white;
-    padding-top:0;
-}
-
-#subtitle a {
-    color: white;
-}
-
-#download a {
-    color:#222;
-}
-
-#geojson a {
-    color:#222;
-}
-
-.steps {
-    padding:15px 20px 5px 20px;
-}
-
-#progress {
-    font:11px/normal 'Lucida Grande';;
-}
-
-#instructions {
-    font:25px Lato,"Helvetica Neue",Helvetica,Arial,sans-serif;
-    color:#222;
-    font-weight:300;
-    width:35%;
-    height:100%;
-    display: table-cell;
-}
-
-#failure_title {
-    font:25px Dosis,"Helvetica Neue",Helvetica,Arial,sans-serif;
-    color:white;
-}
-
-#failure_list {
-    font:11px/normal 'Lucida Grande';
-    padding-top:5px;
-}
-
-#container {
-    display: table-cell;
-    position: relative;
-}
-
-#failures {
-    height:100%;
-    width:100%;    
-    position: absolute;
-    top: 0;
-    left: 0;
-    z-index: -1000;
-    background-color:white;
-}
-
-#geocoding {
-    background-color:white;
-    z-index: 1000;
-}
-
-
-#map {
-    height:100%;
-    width:65%;
-    overflow:hidden;
-    display: table-cell
-}
-
-.stButton .chicklets {
-    padding:0 10px 0 0
-}
-
-#footer {
-    float:bottom;
-    padding:15px 15px 25px
-}
-
-.link {
-    height:28px;
-    font:28px Lato,"Helvetica Neue",Helvetica,Arial,sans-serif;
-    text-decoration:none;
-    color:#222;
-    text-align:left;
-    padding:0 10px 0 0
-}
-
-html,body {
-    height:100%;
-    margin:0
+html, body {
+  height: 100%;
+  margin: 0;
 }
 
 a {
-    text-decoration: none;
+  text-decoration: none;
 }
 
+h2 {
+  font: 25px "Helvetica Neue", Helvetica, Arial, sans-serif;
+  font-weight: 300;
+  margin: 0 0 5px 0;
+}
+
+.hidden {
+  display: none;
+}
+
+#sidebar {
+  color: #222;
+  font-weight: 300;
+  width: 35%;
+  height: 100%;
+  display: table-cell;
+}
+
+#sidebar > div {
+  padding: 15px 20px 5px 20px;
+}
+
+#titleBox {
+  font-family: Dosis, "Helvetica Neue", Helvetica, Arial, sans-serif;
+  background-color: #257625;        
+  padding: 10px 90px 10px 0px;
+  margin-bottom: 10px;
+  color: white;
+}
+
+#container {
+  display: table-cell;
+  position: relative;
+}
+
+#contents {
+  width: 100%;
+  height: 100%;
+  display: table;
+}
+
+
+#title {
+  font-size: 50px;
+  padding: 15px 20px 5px 0;
+}
+
+#subtitle {
+  font-size: 20px;
+  padding: 0 20px 5px 0;
+  line-height: 40px;
+}
+
+#subtitle a {
+  color: white;
+}
+
+button a {
+  color: #222;
+}
+
+.message {
+  font: 11px/normal 'Lucida Grande';
+}
+
+
+#failures {
+  padding-top: 5px;
+  margin-top: 10px;
+  display: block;
+  max-height: 120px;
+  width: 100%;
+  overflow: auto
+}
+
+#failures.hidden {
+  display: none;
+}
+
+#tipJar {
+  border: 2px white solid;
+  border-radius: 5px;
+  padding: 0 5px 0 5px;
+}
+
+#map {
+  height: 100%;
+  width: 65%;
+  overflow: hidden;
+  display: table-cell
+}
